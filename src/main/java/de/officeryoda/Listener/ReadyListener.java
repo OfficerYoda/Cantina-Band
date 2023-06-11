@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class ReadyListener extends ListenerAdapter {
 
 	public void onReady(ReadyEvent event) {
+		CantinaBand cantinaBand = CantinaBand.INSTANCE;
 		List<Guild> guilds = event.getJDA().getGuilds();
 		for(Guild guild : guilds) {
 			//send bot start confirmation
@@ -25,11 +26,13 @@ public class ReadyListener extends ListenerAdapter {
 				embed.setTitle("**Bot booted succesfully**");
 				embed.setColor(Color.LIGHT_GRAY);
 				embed.setDescription(":man: **Host:** " + System.getProperty("user.home").replace("C:\\Users\\", "")
-						+ "\n:hourglass: **Time:** " + (System.currentTimeMillis() - CantinaBand.startTime) + " ms");
+						+ "\n:hourglass: **Time:** " + (System.currentTimeMillis() - CantinaBand.getStartTime()) + " ms");
 				embed.setFooter(dtf.format(now), guild.getSelfMember().getUser().getAvatarUrl());
 				guild.getTextChannelById(923608705470189638L).sendMessageEmbeds(embed.build()).queue();
 				embed.clear();
 			}
+			cantinaBand.addGuild(guild);
 		}
+		System.out.println("Cantina Band is ready to play");
 	}
 }
