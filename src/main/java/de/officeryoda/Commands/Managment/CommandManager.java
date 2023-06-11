@@ -3,6 +3,7 @@ package de.officeryoda.Commands.Managment;
 import de.officeryoda.Commands.Executer.CmdMusic;
 import de.officeryoda.Commands.Executer.CmdPing;
 import de.officeryoda.Commands.Executer.CmdPlay;
+import de.officeryoda.Commands.Executer.CmdVolume;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -35,14 +36,16 @@ public class CommandManager {
 
     public void registerCommands() {
         OptionData play_urlArg = new OptionData(OptionType.STRING, "url", "The URL of the song", true);
+        OptionData volume_volumeArg = new OptionData(OptionType.INTEGER, "volume", "The volume you want to set the bot to");
 
         List<Command> commands = new ArrayList<>();
-        commands.add(new Command(Commands.slash("ping", "Pings the Bot").setGuildOnly(true), new CmdPing()));
-        commands.add(new Command(Commands.slash("music", "Music test").setGuildOnly(true), new CmdMusic()));
-        commands.add(new Command(Commands.slash("play", "Plays a song from Youtube/SoundCloud(Comming soon)").addOptions(play_urlArg),new CmdPlay()));
+        commands.add(new Command(Commands.slash("ping", "Pings the Bot"), new CmdPing()));
+        commands.add(new Command(Commands.slash("music", "Music test"), new CmdMusic()));
+        commands.add(new Command(Commands.slash("play", "Plays a song from Youtube/SoundCloud(Coming soon)").addOptions(play_urlArg), new CmdPlay()));
+        commands.add(new Command(Commands.slash("volume", "Sets the Volume  of the bot").addOptions(volume_volumeArg), new CmdVolume()));
 
         for(Command cmd : commands) {
-            jda.upsertCommand(cmd.cmdData).queue();
+            jda.upsertCommand(cmd.cmdData.setGuildOnly(true)).queue();
             commandExecuter.put(cmd.cmdData.getName(), cmd.commandExecuter);
         }
     }
@@ -51,5 +54,6 @@ public class CommandManager {
         commandExecuter.getOrDefault(command, e -> e.reply("This Command has not been implemented yet.").setEphemeral(true).queue()).executeCommand(event);
     }
 
-    private record Command(CommandData cmdData, CommandExecuter commandExecuter) {}
+    private record Command(CommandData cmdData, CommandExecuter commandExecuter) {
+    }
 }

@@ -71,5 +71,7 @@ public class CmdPlay implements CommandExecuter {
             url = "ytsearch: " + url;
         }
         apm.loadItem(url, new AudioLoadResult(controller, url));
+
+        event.reply("Playing").queue();
     }
 }
