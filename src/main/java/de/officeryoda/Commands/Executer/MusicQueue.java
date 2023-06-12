@@ -9,10 +9,12 @@ import de.officeryoda.Music.Queue;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,15 +57,26 @@ public class MusicQueue {
         }
 
         private void sendQueuePageFromArg(SlashCommandInteractionEvent event, MusicController controller) {
-            OptionMapping pageArg = event.getOption("page");
+            OptionMapping pageArg = event.getOption("operation");
             int page = 0;
             if(pageArg != null) {
-                page = pageArg.getAsInt();
+                page = Integer.parseInt(pageArg.getAsString());
             }
             sendQueuePage(event, controller, page);
         }
 
         private void sendQueuePage(SlashCommandInteractionEvent event, MusicController controller, int page) {
+            MessageEmbed embed = getQueuePageEmbed(controller, page);
+            event.replyEmbeds(embed).addActionRow(
+                    Button.primary("queueFarPrevious", Emoji.fromUnicode("⏪")),
+                    Button.primary("queuePrevious", Emoji.fromUnicode("◀️")),
+                    Button.primary("queueNext", Emoji.fromUnicode("▶️")),
+                    Button.primary("queueFarNext", Emoji.fromUnicode("⏩")))
+                    .queue();
+        }
+
+        public MessageEmbed getQueuePageEmbed(MusicController controller, int page) {
+
             List<AudioTrack> queue = controller.getQueue().getQueueList();
             EmbedBuilder embed = new EmbedBuilder();
             StringBuilder builder = new StringBuilder();
@@ -76,7 +89,7 @@ public class MusicQueue {
 
             if(queue.size() > 0) {
                 int queueSize = queue.size();
-                int maxPage = (int) Math.ceil(queueSize / 10f + 1);
+                int maxPage = (int) Math.ceil(queueSize / 10f);
                 if(page <= 0) page = 1;
                 if(page > queueSize) page = maxPage;
 
@@ -102,7 +115,8 @@ public class MusicQueue {
             }
 
             embed.addField("**QUEUE**", builder.toString(), false);
-            event.replyEmbeds(embed.build()).queue();
+
+            return embed.build();
         }
     }
 

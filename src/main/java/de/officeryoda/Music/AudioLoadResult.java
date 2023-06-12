@@ -10,6 +10,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.officeryoda.CantinaBand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class AudioLoadResult implements AudioLoadResultHandler {
 
@@ -46,7 +48,8 @@ public class AudioLoadResult implements AudioLoadResultHandler {
         }
 
         EmbedBuilder embed = new EmbedBuilder().setColor(Color.RED)
-                .setDescription("Added ``" + added + "`` tracks to queue.")
+                .setTitle("Playlist added to queue | " + playlist.getName())
+                .setDescription("Added ``" + added + "`` tracks to queue, now ``" + queue.getLength() + "``.")
                 .setFooter(cantinaBand.getEmbedFooterTime(), cantinaBand.getProfilePictureUrl());
 
         MessageChannelUnion channel = controller.getQueue().getCmdChannel();

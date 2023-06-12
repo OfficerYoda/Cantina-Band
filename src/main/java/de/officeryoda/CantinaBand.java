@@ -1,6 +1,7 @@
 package de.officeryoda;
 
 import de.officeryoda.Commands.Managment.CommandManager;
+import de.officeryoda.Listener.ButtonListener;
 import de.officeryoda.Listener.CommandListener;
 import de.officeryoda.Listener.ReadyListener;
 import de.officeryoda.Music.MusicMaster;
@@ -44,14 +45,10 @@ public class CantinaBand {
         // register Listeners
         jda.addEventListener(new CommandListener());
         jda.addEventListener(new ReadyListener());
+        jda.addEventListener(new ButtonListener());
 
         // other
         guilds = new HashMap<>();
-    }
-
-    public static void main(String[] args) {
-        startTime = System.currentTimeMillis();
-        new CantinaBand();
     }
 
     private void shutdown() {
@@ -89,5 +86,10 @@ public class CantinaBand {
 
     public Guild getGuildById(long guildId) {
         return guilds.get(guildId);
+    }
+
+    public static void main(String[] args) {
+        startTime = System.currentTimeMillis();
+        new CantinaBand();
     }
 }

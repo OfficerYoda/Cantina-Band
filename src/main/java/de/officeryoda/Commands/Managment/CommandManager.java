@@ -39,8 +39,8 @@ public class CommandManager {
         OptionData urlArg = new OptionData(OptionType.STRING, "url", "The URL of the song", true);
         OptionData volumeArg = new OptionData(OptionType.INTEGER, "volume", "The volume you want to set the bot to");
         OptionData looping = new OptionData(OptionType.BOOLEAN, "looping", "The state of looping");
-        OptionData queue = new OptionData(OptionType.STRING, "operation", "Queue operation arg").addChoice("shuffle", "shuffle").addChoice("clear", "clear").addChoice("page", "page");
-        OptionData queuePage = new OptionData(OptionType.INTEGER, "page", "The queue page (only required when previous argument is page)");
+        OptionData queue = new OptionData(OptionType.STRING, "operation", "Queue operation arg").addChoice("shuffle", "shuffle").addChoice("clear", "clear");
+//        OptionData queuePage = new OptionData(OptionType.INTEGER, "page", "The queue page (only required when previous argument is page)");
 
         /*
         add queue arg page
@@ -56,7 +56,7 @@ public class CommandManager {
         commands.add(new Command(Commands.slash("resume", "Resumes the bot if possible"), new MusicMisc.CmdResume()));
         commands.add(new Command(Commands.slash("loop", "Loops the currently playing bot").addOptions(looping), new MusicMisc.CmdLoop()));
         commands.add(new Command(Commands.slash("toggleloop", "Toggles the loop state"), new MusicMisc.CmdToggleLoop()));
-        commands.add(new Command(Commands.slash("queue", "Shows the queue or lets you clear/shuffle it").addOptions(queue, queuePage), new MusicQueue.CmdQueue()));
+        commands.add(new Command(Commands.slash("queue", "Shows the queue or lets you clear/shuffle it").addOptions(queue), new MusicQueue.CmdQueue()));
         commands.add(new Command(Commands.slash("shuffle", "Shuffles the queue"), new MusicQueue.CmdShuffle()));
         commands.add(new Command(Commands.slash("skip", "Skips the current song"), new MusicQueue.CmdSkip()));
 
