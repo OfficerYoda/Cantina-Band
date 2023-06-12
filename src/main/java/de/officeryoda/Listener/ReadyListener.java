@@ -7,9 +7,12 @@ import java.util.List;
 
 import de.officeryoda.CantinaBand;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.requests.RestAction;
 
 public class ReadyListener extends ListenerAdapter {
 

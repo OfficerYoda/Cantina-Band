@@ -46,7 +46,7 @@ public class AudioLoadResult implements AudioLoadResultHandler {
         }
 
         EmbedBuilder embed = new EmbedBuilder().setColor(Color.RED)
-                .setDescription("added " + added + " tracks to queue.")
+                .setDescription("Added ``" + added + "`` tracks to queue.")
                 .setFooter(cantinaBand.getEmbedFooterTime(), cantinaBand.getProfilePictureUrl());
 
         MessageChannelUnion channel = controller.getQueue().getCmdChannel();

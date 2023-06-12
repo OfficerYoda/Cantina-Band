@@ -55,7 +55,8 @@ public class CantinaBand {
     }
 
     private void shutdown() {
-        jda.shutdown();
+        if(jda != null)
+            jda.shutdown();
         System.out.println("shutdown");
     }
 
