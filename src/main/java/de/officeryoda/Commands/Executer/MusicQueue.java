@@ -66,13 +66,16 @@ public class MusicQueue {
         }
 
         private void sendQueuePage(SlashCommandInteractionEvent event, MusicController controller, int page) {
+            Button b1 = Button.primary("queueFarPrevious", Emoji.fromUnicode("⏪"));
+            Button b2 = Button.primary("queuePrevious", Emoji.fromUnicode("◀️"));
+            Button b3 = Button.primary("queueNext", Emoji.fromUnicode("▶️"));
+            Button b4 = Button.primary("queueFarNext", Emoji.fromUnicode("⏩"));
+            if(page <= 0) {
+                b1 = b1.asDisabled();
+                b2 = b2.asDisabled();
+            }
             MessageEmbed embed = getQueuePageEmbed(controller, page);
-            event.replyEmbeds(embed).addActionRow(
-                    Button.primary("queueFarPrevious", Emoji.fromUnicode("⏪")),
-                    Button.primary("queuePrevious", Emoji.fromUnicode("◀️")),
-                    Button.primary("queueNext", Emoji.fromUnicode("▶️")),
-                    Button.primary("queueFarNext", Emoji.fromUnicode("⏩")))
-                    .queue();
+            event.replyEmbeds(embed).addActionRow(b1, b2, b3, b4).queue();
         }
 
         public MessageEmbed getQueuePageEmbed(MusicController controller, int page) {
@@ -107,7 +110,7 @@ public class MusicQueue {
 
                 //build the queue
                 for(int i = startValue; i < endValue; i++) {
-                    builder.append("**[" + (i + 1) + "]** " + queue.get(i).getInfo().title + "\r\n");
+                    builder.append("**[").append(i + 1).append("]** ").append(queue.get(i).getInfo().title).append("\r\n");
                 }
                 embed.setFooter("page " + page + "/" + maxPage);
             } else {
