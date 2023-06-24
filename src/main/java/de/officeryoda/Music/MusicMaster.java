@@ -17,6 +17,7 @@ public class MusicMaster {
 
     public MusicMaster() {
         playerManager = new DefaultAudioPlayerManager();
+        playerManager.setFrameBufferDuration(10);
         AudioSourceManagers.registerRemoteSources(playerManager);
 
         cantinaBand = CantinaBand.INSTANCE;

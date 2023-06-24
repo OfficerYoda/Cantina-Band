@@ -40,20 +40,15 @@ public class CommandManager {
         OptionData volumeArg = new OptionData(OptionType.INTEGER, "volume", "The volume you want to set the bot to");
         OptionData looping = new OptionData(OptionType.BOOLEAN, "looping", "The state of looping");
         OptionData queue = new OptionData(OptionType.STRING, "operation", "Queue operation arg").addChoice("shuffle", "shuffle").addChoice("clear", "clear");
-//        OptionData queuePage = new OptionData(OptionType.INTEGER, "page", "The queue page (only required when previous argument is page)");
-
-        /*
-        add queue arg page
-        add other commands in MusicQueue
-         */
 
         List<Command> commands = new ArrayList<>();
         commands.add(new Command(Commands.slash("ping", "Pings the Bot"), new CmdPing()));
         commands.add(new Command(Commands.slash("play", "Plays a song from Youtube/SoundCloud(Coming soon)").addOptions(urlArg), new MusicBasic.CmdPlay()));
         commands.add(new Command(Commands.slash("stop", "Stops the bot and clears the queue"), new MusicBasic.CmdStop()));
         commands.add(new Command(Commands.slash("volume", "Sets the Volume of the bot").addOptions(volumeArg), new MusicMisc.CmdVolume()));
-        commands.add(new Command(Commands.slash("pause", "Pauses the bot if possible"), new MusicMisc.CmdPause()));
-        commands.add(new Command(Commands.slash("resume", "Resumes the bot if possible"), new MusicMisc.CmdResume()));
+        commands.add(new Command(Commands.slash("pause", "Pauses the bot"), new MusicMisc.CmdPause()));
+        commands.add(new Command(Commands.slash("resume", "Resumes the bot"), new MusicMisc.CmdResume()));
+        commands.add(new Command(Commands.slash("continue", "Resumes the bot"), new MusicMisc.CmdResume()));
         commands.add(new Command(Commands.slash("loop", "Loops the currently playing bot").addOptions(looping), new MusicMisc.CmdLoop()));
         commands.add(new Command(Commands.slash("toggleloop", "Toggles the loop state"), new MusicMisc.CmdToggleLoop()));
         commands.add(new Command(Commands.slash("queue", "Shows the queue or lets you clear/shuffle it").addOptions(queue), new MusicQueue.CmdQueue()));

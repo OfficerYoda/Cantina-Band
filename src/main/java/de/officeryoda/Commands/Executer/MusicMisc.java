@@ -126,9 +126,9 @@ public class MusicMisc {
             OptionMapping messageOption = event.getOption("looping");
 
             if(messageOption == null) {
-                event.reply("The band is currently"
-                        + (controller.isLooping() ? "" : "not") +
-                        " playing den selben Song nochmal.").queue();
+                event.reply("The band is currently "
+                        + (controller.isLooping() ? "" : "not ") +
+                        "playing den selben Song nochmal.").queue();
             } else {
                 boolean looping = messageOption.getAsBoolean();
                 controller.setLooping(looping);

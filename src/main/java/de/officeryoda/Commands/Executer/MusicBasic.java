@@ -39,6 +39,10 @@ public class MusicBasic {
                 return;
             }
 
+            // failure is always a Throwable
+            event.reply("Loading").queue(
+                    (result) -> result.deleteOriginal().queue(),
+                    (failure) -> failure.printStackTrace());
 
             assert guild != null;
             MusicController controller = master.getController(guild.getIdLong());
@@ -62,8 +66,6 @@ public class MusicBasic {
                 url = "ytsearch: " + url;
             }
             playerManager.loadItem(url, new AudioLoadResult(controller, url));
-
-            event.reply("Playing").queue();
         }
     }
 

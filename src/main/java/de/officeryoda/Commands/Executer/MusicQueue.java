@@ -3,6 +3,7 @@ package de.officeryoda.Commands.Executer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.officeryoda.CantinaBand;
 import de.officeryoda.Commands.Managment.CommandExecuter;
+import de.officeryoda.Miscellaneous.ActionRows;
 import de.officeryoda.Music.MusicController;
 import de.officeryoda.Music.MusicMaster;
 import de.officeryoda.Music.Queue;
@@ -14,6 +15,8 @@ import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.util.ArrayList;
@@ -66,16 +69,9 @@ public class MusicQueue {
         }
 
         private void sendQueuePage(SlashCommandInteractionEvent event, MusicController controller, int page) {
-            Button b1 = Button.primary("queueFarPrevious", Emoji.fromUnicode("⏪"));
-            Button b2 = Button.primary("queuePrevious", Emoji.fromUnicode("◀️"));
-            Button b3 = Button.primary("queueNext", Emoji.fromUnicode("▶️"));
-            Button b4 = Button.primary("queueFarNext", Emoji.fromUnicode("⏩"));
-            if(page <= 0) {
-                b1 = b1.asDisabled();
-                b2 = b2.asDisabled();
-            }
+            List<Button> row = ActionRows.QueueRow(page, pagesToMaxPages(controller.getQueue().getLength()));
             MessageEmbed embed = getQueuePageEmbed(controller, page);
-            event.replyEmbeds(embed).addActionRow(b1, b2, b3, b4).queue();
+            event.replyEmbeds(embed).addActionRow(row).queue();
         }
 
         public MessageEmbed getQueuePageEmbed(MusicController controller, int page) {
@@ -92,7 +88,7 @@ public class MusicQueue {
 
             if(queue.size() > 0) {
                 int queueSize = queue.size();
-                int maxPage = (int) Math.ceil(queueSize / 10f);
+                int maxPage = pagesToMaxPages(queueSize);
                 if(page <= 0) page = 1;
                 if(page > queueSize) page = maxPage;
 
@@ -120,6 +116,11 @@ public class MusicQueue {
             embed.addField("**QUEUE**", builder.toString(), false);
 
             return embed.build();
+        }
+
+
+        private int pagesToMaxPages(int pages) {
+            return (int) Math.ceil(pages / 10f);
         }
     }
 

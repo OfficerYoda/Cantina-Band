@@ -13,9 +13,12 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import de.officeryoda.CantinaBand;
+import de.officeryoda.Miscellaneous.ActionRows;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.utils.FileUpload;
+
+import javax.swing.*;
 
 public class Queue {
 
@@ -84,20 +87,6 @@ public class Queue {
         Collections.shuffle(queueList);
     }
 
-    public void move(int from, int to) {
-        List<AudioTrack> list = this.queueList;
-
-        if(from < to) {
-            List<AudioTrack> subList = list.subList(from - 1, to);
-            Collections.rotate(subList, -1);
-        } else {
-            List<AudioTrack> subList = list.subList(to - 1, from);
-            Collections.rotate(subList, 1);
-        }
-
-        return;
-    }
-
     private void sendPlayEmbed(AudioTrack track) {
         if(controller.getPlayer().getPlayingTrack() == null) {
             AudioTrackInfo info = track.getInfo();
@@ -105,28 +94,7 @@ public class Queue {
             embed.setColor(Color.decode("#00e640"));
             embed.setTitle(":notes: playing: **" + info.title + "**", info.uri);
 
-            String time = "";
-
-            long seconds = info.length / 1000;
-            long minutes = seconds / 60;
-            long hours = minutes / 60;
-            seconds %= 60;
-            minutes %= 60;
-            hours %= 60;
-
-            //Hours
-            if(hours > 0)
-                time += hours + ":";
-            //Minutes
-            if(minutes < 10 && hours > 0)
-                time += "0" + minutes + ":";
-            else
-                time += minutes + ":";
-            //Seconds
-            if(seconds < 10)
-                time += "0" + seconds;
-            else
-                time += seconds + "";
+            String time = songLengthToTime(info.length);
 
             String url = info.uri;
             embed.addField(info.author, "[" + info.title + "](" + url + ")", false);
@@ -141,12 +109,12 @@ public class Queue {
                     file = new URL("https://img.youtube.com/vi/" + videoID + "/hqdefault.jpg").openStream();
                     embed.setImage("attachment://thumbnail.png");
 
-                    cmdChannel.sendFiles(FileUpload.fromData(file, "thumbnail.png")).setEmbeds(embed.build()).queue();
+                    cmdChannel.sendFiles(FileUpload.fromData(file, "thumbnail.png")).setEmbeds(embed.build()).addActionRow(ActionRows.PlayerRow(true)).queue(); // not playing yet but as soon as it joins
                 } catch(IOException e) {
                     throw new RuntimeException(e);
                 }
             } else {
-                cmdChannel.sendMessageEmbeds(embed.build()).queue();
+                cmdChannel.sendMessageEmbeds(embed.build()).addActionRow(ActionRows.PlayerRow(true)).queue(); // not playing yet but as soon as it joins
             }
         }
     }
@@ -165,5 +133,32 @@ public class Queue {
 
     public MessageChannelUnion getCmdChannel() {
         return cmdChannel;
+    }
+
+    private String songLengthToTime(long length) {
+        String time = "";
+
+        long seconds = length / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        seconds %= 60;
+        minutes %= 60;
+        hours %= 60;
+
+        //Hours
+        if(hours > 0)
+            time += hours + ":";
+        //Minutes
+        if(minutes < 10 && hours > 0)
+            time += "0" + minutes + ":";
+        else
+            time += minutes + ":";
+        //Seconds
+        if(seconds < 10)
+            time += "0" + seconds;
+        else
+            time += seconds + "";
+
+        return time;
     }
 }
