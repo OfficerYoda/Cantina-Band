@@ -52,13 +52,7 @@ public class TrackScheduler extends AudioEventAdapter {
         MusicController controller = master.getController(guildId);
         Queue queue = controller.getQueue();
 
-//        if(controller.isLooping()) {
-//            String lastUri = getLastUri(guild);
-//            master.getPlayerManager().loadItem(lastUri, new AudioLoadResult(controller, lastUri));
-//            return;
-//        }
-
-        if(queue.next())
+        if(queue.next()) // still has songs in the queue
             return;
 
         queue.setPlaying(false);

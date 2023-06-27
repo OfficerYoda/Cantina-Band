@@ -1,7 +1,6 @@
 package de.officeryoda.Music;
 
 import java.awt.Color;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -18,30 +17,36 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.utils.FileUpload;
 
-import javax.swing.*;
-
 public class Queue {
 
-    private CantinaBand cantinaBand;
+    private final CantinaBand cantinaBand;
 
-    private List<AudioTrack> queueList;
-    private MusicController controller;
+    private List<AudioTrack> trackList;
+    private int queuePosition = 0;
+    private AudioTrack lastLoopingTrack;
+
+    private final MusicController controller;
     private boolean playing;
     private MessageChannelUnion cmdChannel;
 
     public Queue(MusicController controller) {
         this.cantinaBand = CantinaBand.INSTANCE;
         this.controller = controller;
-        this.queueList = new ArrayList<>();
+        this.trackList = new ArrayList<>();
     }
 
     public boolean next() {
-        if(this.queueList.size() == 0) return false;
+        if(hasNext()) return false;
+
         AudioTrack track;
-        if(controller.isLooping())
-            track = queueList.get(0);
-        else
-            track = queueList.remove(0);
+        if(controller.isLooping()) {
+            track = trackList.get(Math.max(queuePosition - 1, 0)); // to loop currently playing song (queue Position is where the queue starts)
+            lastLoopingTrack = track;
+        } else {
+            track = trackList.get(queuePosition++);
+            if(track == lastLoopingTrack)
+                return next();
+        }
 
         if(track == null) return false;
 
@@ -53,8 +58,23 @@ public class Queue {
         return true;
     }
 
+    public void previous() {
+        if(!hasPrevious()) return;
+
+        queuePosition--; // queue position is where the queue starts
+        AudioTrack track = trackList.get(queuePosition - 1);
+        ;
+
+        if(track == null) return;
+
+        if(!isPlaying())
+            sendPlayEmbed(track);
+
+        this.controller.getPlayer().playTrack(track);
+    }
+
     public void addTrackToQueue(AudioTrack track, boolean isPlaylist) {
-        this.queueList.add(track);
+        this.trackList.add(track);
 
         if(controller.getPlayer().getPlayingTrack() == null)
             next();
@@ -63,76 +83,13 @@ public class Queue {
         ;
     }
 
-    public MusicController getController() {
-        return controller;
-    }
-
-    public void setController(MusicController controller) {
-        this.controller = controller;
-    }
-
-    public List<AudioTrack> getQueueList() {
-        return queueList;
-    }
-
-    public void setQueueList(List<AudioTrack> queueList) {
-        this.queueList = queueList;
-    }
-
-    public int getLength() {
-        return this.queueList.size();
-    }
-
     public void shuffle() {
-        Collections.shuffle(queueList);
+        Collections.shuffle(trackList);
     }
 
-    private void sendPlayEmbed(AudioTrack track) {
-        if(controller.getPlayer().getPlayingTrack() == null) {
-            AudioTrackInfo info = track.getInfo();
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.setColor(Color.decode("#00e640"));
-            embed.setTitle(":notes: playing: **" + info.title + "**", info.uri);
-
-            String time = songLengthToTime(info.length);
-
-            String url = info.uri;
-            embed.addField(info.author, "[" + info.title + "](" + url + ")", false);
-            embed.addField("Length: ", info.isStream ? ":red_circle: STREAM" : time, true);
-            embed.setFooter(cantinaBand.getEmbedFooterTime(), cantinaBand.getProfilePictureUrl());
-
-            if(url.startsWith("https://www.youtube.com/watch?v=")) {
-                String videoID = url.replace("https://www.youtube.com/watch?v=", "");
-
-                InputStream file;
-                try {
-                    file = new URL("https://img.youtube.com/vi/" + videoID + "/hqdefault.jpg").openStream();
-                    embed.setImage("attachment://thumbnail.png");
-
-                    cmdChannel.sendFiles(FileUpload.fromData(file, "thumbnail.png")).setEmbeds(embed.build()).addActionRow(ActionRows.PlayerRow(true)).queue(); // not playing yet but as soon as it joins
-                } catch(IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                cmdChannel.sendMessageEmbeds(embed.build()).addActionRow(ActionRows.PlayerRow(true)).queue(); // not playing yet but as soon as it joins
-            }
-        }
-    }
-
-    public boolean isPlaying() {
-        return playing;
-    }
-
-    public void setPlaying(boolean playing) {
-        this.playing = playing;
-    }
-
-    public void setCmdChannel(MessageChannelUnion cmdChannel) {
-        this.cmdChannel = cmdChannel;
-    }
-
-    public MessageChannelUnion getCmdChannel() {
-        return cmdChannel;
+    public void clear() {
+        trackList = new ArrayList<>();
+        queuePosition = 0;
     }
 
     private String songLengthToTime(long length) {
@@ -160,5 +117,87 @@ public class Queue {
             time += seconds + "";
 
         return time;
+    }
+
+    public List<AudioTrack> getQueueList() {
+        return trackList.subList(queuePosition, trackList.size() - 1);
+    }
+
+    public int getQueueLength() {
+        return trackList.size() - queuePosition;
+    }
+
+    private void sendPlayEmbed(AudioTrack track) {
+        if(controller.getPlayer().getPlayingTrack() == null) {
+            AudioTrackInfo info = track.getInfo();
+            String url = info.uri;
+            EmbedBuilder embed = getPlayEmbed(track);
+
+            if(url.startsWith("https://www.youtube.com/watch?v=")) {
+                InputStream file = getThumbnail(track);
+                if(file != null) {
+                    embed.setImage("attachment://thumbnail.png");
+                    cmdChannel.sendFiles(FileUpload.fromData(file, "thumbnail.png")).setEmbeds(embed.build()).addActionRow(ActionRows.playerRow(true)).queue(); // not playing yet but as soon as it joins
+                }
+            }
+            cmdChannel.sendMessageEmbeds(embed.build()).addActionRow(ActionRows.playerRow(true)).queue(); // not playing yet but as soon as it joins
+        }
+    }
+
+    public EmbedBuilder getPlayEmbed(AudioTrack track) {
+        AudioTrackInfo info = track.getInfo();
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setColor(Color.decode("#00e640"));
+        embed.setTitle(":notes: playing: **" + info.title + "**", info.uri);
+
+        String time = songLengthToTime(info.length);
+
+        String url = info.uri;
+        embed.addField(info.author, "[" + info.title + "](" + url + ")", false);
+        embed.addField("Length: ", info.isStream ? ":red_circle: STREAM" : time, true);
+        embed.setFooter(cantinaBand.getEmbedFooterTime(), cantinaBand.getProfilePictureUrl());
+
+        return embed;
+    }
+
+    public InputStream getThumbnail(AudioTrack track) {
+        String videoID = track.getInfo().uri.replace("https://www.youtube.com/watch?v=", "");
+
+        InputStream file;
+        try {
+            file = new URL("https://img.youtube.com/vi/" + videoID + "/hqdefault.jpg").openStream();
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+        return file;
+    }
+
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    public boolean hasNext() {
+        return getQueueLength() == 0;
+    }
+
+    public boolean hasPrevious() {
+        return queuePosition > 0;
+    }
+
+    public void setPlaying(boolean playing) {
+        this.controller.getPlayer().setPaused(!playing);
+        this.playing = playing;
+    }
+
+    public AudioTrack getCurrentTrack() {
+        return trackList.get(queuePosition);
+    }
+
+    public void setCmdChannel(MessageChannelUnion cmdChannel) {
+        this.cmdChannel = cmdChannel;
+    }
+
+    public MessageChannelUnion getCmdChannel() {
+        return cmdChannel;
     }
 }

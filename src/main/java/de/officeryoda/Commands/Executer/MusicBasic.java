@@ -8,15 +8,12 @@ import de.officeryoda.Music.AudioLoadResult;
 import de.officeryoda.Music.MusicController;
 import de.officeryoda.Music.MusicMaster;
 import de.officeryoda.Music.Queue;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.managers.AudioManager;
-
-import java.util.ArrayList;
 
 public class MusicBasic {
 
@@ -39,26 +36,29 @@ public class MusicBasic {
                 return;
             }
 
-            // failure is always a Throwable
-            event.reply("Loading").queue(
-                    (result) -> result.deleteOriginal().queue(),
-                    (failure) -> failure.printStackTrace());
-
             assert guild != null;
             MusicController controller = master.getController(guild.getIdLong());
             Queue queue = controller.getQueue();
             AudioPlayerManager playerManager = master.getPlayerManager();
             AudioManager manager = guild.getAudioManager();
 
-            if(queue.getLength() != 0)
-                if(guild.getSelfMember().getVoiceState().getChannel() != event.getMember().getVoiceState().getChannel())
-                    event.reply("I'm not in your voiceChannel").setEphemeral(true).queue();
+            if(queue.getQueueLength() != 0) {
+                if(guild.getSelfMember().getVoiceState().getChannel() != event.getMember().getVoiceState().getChannel()) { // check if bot channel is same as sender channel
+                    event.reply("I'm not in your voice channel").setEphemeral(true).queue();
+                    return;
+                }
+            }
+
+            // failure is always a Throwable
+            event.reply("Loading").queue(
+                    (result) -> result.deleteOriginal().queue(),
+                    (failure) -> failure.printStackTrace());
 
             queue.setCmdChannel(event.getChannel());
             manager.openAudioConnection(vc);
 
             // get url arg
-            OptionMapping messageOption = event.getOption("url");
+            OptionMapping messageOption = event.getOption("song-name");
             assert messageOption != null;
             String url = messageOption.getAsString();
 
@@ -98,7 +98,7 @@ public class MusicBasic {
 
                 player.stopTrack();
                 guild.getAudioManager().closeAudioConnection();
-                controller.getQueue().setQueueList(new ArrayList<>());
+                controller.getQueue().clear();
                 msg.editOriginal("Stopped playing and cleared the queue.").queue();
             });
         }

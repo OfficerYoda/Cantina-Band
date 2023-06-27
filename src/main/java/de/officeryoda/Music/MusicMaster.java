@@ -7,9 +7,9 @@ import de.officeryoda.CantinaBand;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class MusicMaster {
-
 
     private final CantinaBand cantinaBand;
     private final AudioPlayerManager playerManager;
@@ -17,7 +17,7 @@ public class MusicMaster {
 
     public MusicMaster() {
         playerManager = new DefaultAudioPlayerManager();
-        playerManager.setFrameBufferDuration(10);
+        playerManager.setFrameBufferDuration((int) TimeUnit.SECONDS.toMillis(10));
         AudioSourceManagers.registerRemoteSources(playerManager);
 
         cantinaBand = CantinaBand.INSTANCE;

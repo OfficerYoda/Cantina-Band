@@ -12,14 +12,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MusicQueue {
@@ -45,7 +41,7 @@ public class MusicQueue {
             if(arg1 != null) {
                 switch(arg1.getAsString()) {
                     case "clear" -> {
-                        queue.setQueueList(new ArrayList<>());
+                        queue.clear();
                         event.reply("Queue cleared.").queue();
                     }
 //                    case "page"-- > sendQueuePageFromArg(event, controller); // same as default
@@ -69,9 +65,10 @@ public class MusicQueue {
         }
 
         private void sendQueuePage(SlashCommandInteractionEvent event, MusicController controller, int page) {
-            List<Button> row = ActionRows.QueueRow(page, pagesToMaxPages(controller.getQueue().getLength()));
+            List<Button> navRow = ActionRows.queueNavigationRow(page, pagesToMaxPages(controller.getQueue().getQueueLength()));
+            List<Button> secRow = ActionRows.queueSecondaryRow();
             MessageEmbed embed = getQueuePageEmbed(controller, page);
-            event.replyEmbeds(embed).addActionRow(row).queue();
+            event.replyEmbeds(embed).addActionRow(navRow).addActionRow(secRow).queue();
         }
 
         public MessageEmbed getQueuePageEmbed(MusicController controller, int page) {
@@ -159,6 +156,7 @@ public class MusicQueue {
 
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
+            System.out.println("SKIP");
             Guild guild = event.getGuild();
             GuildVoiceState state;
             AudioChannelUnion vc;
@@ -169,7 +167,7 @@ public class MusicQueue {
 
             MusicController controller = master.getController(guild.getIdLong());
 
-            if(controller.getQueue().getLength() > 0)
+            if(controller.getQueue().getQueueLength() > 0)
                 event.reply("Skipping the current song.").queue(msg -> {
                     controller.getQueue().next();
                     msg.editOriginal("Skipped the current song").queue();
