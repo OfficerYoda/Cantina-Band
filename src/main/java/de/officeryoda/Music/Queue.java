@@ -1,6 +1,15 @@
 package de.officeryoda.Music;
 
-import java.awt.Color;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import de.officeryoda.CantinaBand;
+import de.officeryoda.Miscellaneous.ActionRows;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.utils.FileUpload;
+
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -8,30 +17,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-
-import de.officeryoda.CantinaBand;
-import de.officeryoda.Miscellaneous.ActionRows;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
-import net.dv8tion.jda.api.utils.FileUpload;
-
 public class Queue {
 
     private final CantinaBand cantinaBand;
-
-    private List<AudioTrack> trackList;
-    private int queuePosition = 0;
-    private AudioTrack lastLoopingTrack;
-
     private final MusicController controller;
-    private boolean playing;
+    private final AudioPlayer player;
+    private List<AudioTrack> trackList;
+    /**
+     * Represents the position of the next track in the queue to be played after the current track is finished.
+     */
+    private int queuePosition;
+    private AudioTrack lastLoopingTrack;
     private MessageChannelUnion cmdChannel;
 
     public Queue(MusicController controller) {
         this.cantinaBand = CantinaBand.INSTANCE;
         this.controller = controller;
+        this.player = controller.getPlayer();
         this.trackList = new ArrayList<>();
     }
 
@@ -40,20 +42,21 @@ public class Queue {
 
         AudioTrack track;
         if(controller.isLooping()) {
-            track = trackList.get(Math.max(queuePosition - 1, 0)); // to loop currently playing song (queue Position is where the queue starts)
+            track = trackList.get(Math.max(queuePosition - 1, 0));
             lastLoopingTrack = track;
         } else {
-            track = trackList.get(queuePosition++);
+            track = trackList.get(queuePosition);
+            queuePosition++;
             if(track == lastLoopingTrack)
                 return next();
         }
 
         if(track == null) return false;
 
-        if(!isPlaying())
-            sendPlayEmbed(track);
+        sendPlayEmbed(track);
 
-        this.controller.getPlayer().playTrack(track);
+        // Can't play the same instance of a track twice: .clone to get multiple instances during queue navigation
+        player.playTrack(track.makeClone());
 
         return true;
     }
@@ -61,26 +64,23 @@ public class Queue {
     public void previous() {
         if(!hasPrevious()) return;
 
-        queuePosition--; // queue position is where the queue starts
-        AudioTrack track = trackList.get(queuePosition - 1);
-        ;
+        queuePosition--;
+        AudioTrack track = trackList.get(queuePosition - 1); // queue position is where the index of the next song
 
         if(track == null) return;
 
-        if(!isPlaying())
-            sendPlayEmbed(track);
+        sendPlayEmbed(track);
 
-        this.controller.getPlayer().playTrack(track);
+        player.playTrack(track.makeClone());
     }
 
     public void addTrackToQueue(AudioTrack track, boolean isPlaylist) {
         this.trackList.add(track);
 
-        if(controller.getPlayer().getPlayingTrack() == null)
+        if(player.getPlayingTrack() == null)
             next();
         else if(!isPlaylist)
             cmdChannel.sendMessage(":notes: Added **" + track.getInfo().title + "** to queue.").queue();
-        ;
     }
 
     public void shuffle() {
@@ -128,7 +128,7 @@ public class Queue {
     }
 
     private void sendPlayEmbed(AudioTrack track) {
-        if(controller.getPlayer().getPlayingTrack() == null) {
+        if(player.getPlayingTrack() == null) {
             AudioTrackInfo info = track.getInfo();
             String url = info.uri;
             EmbedBuilder embed = getPlayEmbed(track);
@@ -139,8 +139,9 @@ public class Queue {
                     embed.setImage("attachment://thumbnail.png");
                     cmdChannel.sendFiles(FileUpload.fromData(file, "thumbnail.png")).setEmbeds(embed.build()).addActionRow(ActionRows.playerRow(true)).queue(); // not playing yet but as soon as it joins
                 }
+            } else {
+                cmdChannel.sendMessageEmbeds(embed.build()).addActionRow(ActionRows.playerRow(true)).queue(); // not playing yet but as soon as it joins
             }
-            cmdChannel.sendMessageEmbeds(embed.build()).addActionRow(ActionRows.playerRow(true)).queue(); // not playing yet but as soon as it joins
         }
     }
 
@@ -173,7 +174,11 @@ public class Queue {
     }
 
     public boolean isPlaying() {
-        return playing;
+        return !player.isPaused();
+    }
+
+    public void setPlaying(boolean playing) {
+        this.player.setPaused(!playing);
     }
 
     public boolean hasNext() {
@@ -181,23 +186,18 @@ public class Queue {
     }
 
     public boolean hasPrevious() {
-        return queuePosition > 0;
-    }
-
-    public void setPlaying(boolean playing) {
-        this.controller.getPlayer().setPaused(!playing);
-        this.playing = playing;
+        return queuePosition > 1;
     }
 
     public AudioTrack getCurrentTrack() {
-        return trackList.get(queuePosition);
-    }
-
-    public void setCmdChannel(MessageChannelUnion cmdChannel) {
-        this.cmdChannel = cmdChannel;
+        return trackList.get(queuePosition - 1);
     }
 
     public MessageChannelUnion getCmdChannel() {
         return cmdChannel;
+    }
+
+    public void setCmdChannel(MessageChannelUnion cmdChannel) {
+        this.cmdChannel = cmdChannel;
     }
 }

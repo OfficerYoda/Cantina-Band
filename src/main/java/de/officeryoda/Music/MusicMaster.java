@@ -25,7 +25,7 @@ public class MusicMaster {
     }
 
     public MusicController getController(long guildId) {
-        MusicController mc = null;
+        MusicController mc;
 
         if(controller.containsKey(guildId)) {
             mc = this.controller.get(guildId);

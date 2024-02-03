@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class CommandListener extends ListenerAdapter {
 
-    private CommandManager cmdManager;
+    private final CommandManager cmdManager;
 
     public CommandListener() {
         cmdManager = CommandManager.INSTANCE;
