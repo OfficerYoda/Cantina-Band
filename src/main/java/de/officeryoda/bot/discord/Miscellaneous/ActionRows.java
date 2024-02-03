@@ -1,4 +1,4 @@
-package de.officeryoda.Miscellaneous;
+package de.officeryoda.bot.discord.Miscellaneous;
 
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;

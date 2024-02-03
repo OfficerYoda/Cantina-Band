@@ -1,6 +1,6 @@
-package de.officeryoda.Listener;
+package de.officeryoda.bot.discord.Listener;
 
-import de.officeryoda.Commands.Managment.CommandManager;
+import de.officeryoda.bot.discord.Commands.Managment.CommandManager;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;

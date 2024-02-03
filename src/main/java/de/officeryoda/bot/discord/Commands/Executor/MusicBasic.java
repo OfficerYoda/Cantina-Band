@@ -1,13 +1,13 @@
-package de.officeryoda.Commands.Executer;
+package de.officeryoda.bot.discord.Commands.Executor;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import de.officeryoda.CantinaBand;
-import de.officeryoda.Commands.Managment.CommandExecuter;
-import de.officeryoda.Music.AudioLoadResult;
-import de.officeryoda.Music.MusicController;
-import de.officeryoda.Music.MusicMaster;
-import de.officeryoda.Music.Queue;
+import de.officeryoda.bot.discord.CantinaBand;
+import de.officeryoda.bot.discord.Commands.Managment.CommandExecutor;
+import de.officeryoda.bot.discord.Music.AudioLoadResult;
+import de.officeryoda.bot.discord.Music.MusicController;
+import de.officeryoda.bot.discord.Music.MusicMaster;
+import de.officeryoda.bot.discord.Music.Queue;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
@@ -15,11 +15,9 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.managers.AudioManager;
 
-import java.io.File;
-
 public class MusicBasic {
 
-    public static class CmdPlay implements CommandExecuter {
+    public static class CmdPlay implements CommandExecutor {
 
         private final MusicMaster master;
 
@@ -74,7 +72,7 @@ public class MusicBasic {
         }
     }
 
-    public static class CmdStop implements CommandExecuter {
+    public static class CmdStop implements CommandExecutor {
 
         private final MusicMaster master;
 

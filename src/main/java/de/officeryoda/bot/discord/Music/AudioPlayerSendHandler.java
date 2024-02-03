@@ -1,4 +1,4 @@
-package de.officeryoda.Music;
+package de.officeryoda.bot.discord.Music;
 
 import java.nio.ByteBuffer;
 

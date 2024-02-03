@@ -1,4 +1,4 @@
-package de.officeryoda.Music;
+package de.officeryoda.bot.discord.Music;
 
 import java.awt.Color;
 
@@ -7,7 +7,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
-import de.officeryoda.CantinaBand;
+import de.officeryoda.bot.discord.CantinaBand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 

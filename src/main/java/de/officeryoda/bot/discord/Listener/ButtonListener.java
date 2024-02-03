@@ -1,12 +1,12 @@
-package de.officeryoda.Listener;
+package de.officeryoda.bot.discord.Listener;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import de.officeryoda.CantinaBand;
-import de.officeryoda.Commands.Executer.MusicQueue;
-import de.officeryoda.Miscellaneous.ActionRows;
-import de.officeryoda.Music.MusicController;
-import de.officeryoda.Music.MusicMaster;
-import de.officeryoda.Music.Queue;
+import de.officeryoda.bot.discord.CantinaBand;
+import de.officeryoda.bot.discord.Commands.Executor.MusicQueue;
+import de.officeryoda.bot.discord.Miscellaneous.ActionRows;
+import de.officeryoda.bot.discord.Music.MusicController;
+import de.officeryoda.bot.discord.Music.MusicMaster;
+import de.officeryoda.bot.discord.Music.Queue;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;

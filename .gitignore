@@ -1,5 +1,5 @@
 ### Token ###
-scr/main/java/de/officeryoda/TOKEN.java
+scr/main/java/de/officeryoda/bot/discord/TOKEN.java
 
 target/
 !.mvn/wrapper/maven-wrapper.jar

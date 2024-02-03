@@ -1,4 +1,4 @@
-package de.officeryoda.Music;
+package de.officeryoda.bot.discord.Music;
 
 import java.util.HashMap;
 
@@ -7,7 +7,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
-import de.officeryoda.CantinaBand;
+import de.officeryoda.bot.discord.CantinaBand;
 import net.dv8tion.jda.api.entities.Guild;
 
 public class TrackScheduler extends AudioEventAdapter {

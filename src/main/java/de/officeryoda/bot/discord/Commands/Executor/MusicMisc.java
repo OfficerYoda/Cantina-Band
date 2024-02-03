@@ -1,10 +1,10 @@
-package de.officeryoda.Commands.Executer;
+package de.officeryoda.bot.discord.Commands.Executor;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import de.officeryoda.CantinaBand;
-import de.officeryoda.Commands.Managment.CommandExecuter;
-import de.officeryoda.Music.MusicController;
-import de.officeryoda.Music.MusicMaster;
+import de.officeryoda.bot.discord.CantinaBand;
+import de.officeryoda.bot.discord.Commands.Managment.CommandExecutor;
+import de.officeryoda.bot.discord.Music.MusicController;
+import de.officeryoda.bot.discord.Music.MusicMaster;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 public class MusicMisc {
 
-    public static class CmdVolume implements CommandExecuter {
+    public static class CmdVolume implements CommandExecutor {
 
         private final MusicMaster master;
 
@@ -43,7 +43,7 @@ public class MusicMisc {
         }
     }
 
-    public static class CmdPause implements CommandExecuter {
+    public static class CmdPause implements CommandExecutor {
 
         private final MusicMaster master;
 
@@ -73,7 +73,7 @@ public class MusicMisc {
         }
     }
 
-    public static class CmdResume implements CommandExecuter {
+    public static class CmdResume implements CommandExecutor {
 
         private final MusicMaster master;
 
@@ -103,7 +103,7 @@ public class MusicMisc {
         }
     }
 
-    public static class CmdLoop implements CommandExecuter {
+    public static class CmdLoop implements CommandExecutor {
 
         private final MusicMaster master;
 
@@ -137,7 +137,7 @@ public class MusicMisc {
         }
     }
 
-    public static class CmdToggleLoop implements CommandExecuter {
+    public static class CmdToggleLoop implements CommandExecutor {
 
         private final MusicMaster master;
 

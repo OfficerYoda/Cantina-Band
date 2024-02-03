@@ -1,9 +1,9 @@
-package de.officeryoda.Music;
+package de.officeryoda.bot.discord.Music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
-import de.officeryoda.CantinaBand;
+import de.officeryoda.bot.discord.CantinaBand;
 
 import java.util.HashMap;
 import java.util.Map;

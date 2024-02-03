@@ -1,7 +1,6 @@
-package de.officeryoda.Music;
+package de.officeryoda.bot.discord.Music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import de.officeryoda.CantinaBand;
 import net.dv8tion.jda.api.entities.Guild;
 
 public class MusicController {

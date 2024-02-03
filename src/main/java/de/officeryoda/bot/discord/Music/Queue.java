@@ -1,10 +1,10 @@
-package de.officeryoda.Music;
+package de.officeryoda.bot.discord.Music;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import de.officeryoda.CantinaBand;
-import de.officeryoda.Miscellaneous.ActionRows;
+import de.officeryoda.bot.discord.CantinaBand;
+import de.officeryoda.bot.discord.Miscellaneous.ActionRows;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.utils.FileUpload;

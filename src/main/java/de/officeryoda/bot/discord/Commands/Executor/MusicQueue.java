@@ -1,12 +1,12 @@
-package de.officeryoda.Commands.Executer;
+package de.officeryoda.bot.discord.Commands.Executor;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import de.officeryoda.CantinaBand;
-import de.officeryoda.Commands.Managment.CommandExecuter;
-import de.officeryoda.Miscellaneous.ActionRows;
-import de.officeryoda.Music.MusicController;
-import de.officeryoda.Music.MusicMaster;
-import de.officeryoda.Music.Queue;
+import de.officeryoda.bot.discord.CantinaBand;
+import de.officeryoda.bot.discord.Commands.Managment.CommandExecutor;
+import de.officeryoda.bot.discord.Miscellaneous.ActionRows;
+import de.officeryoda.bot.discord.Music.MusicController;
+import de.officeryoda.bot.discord.Music.MusicMaster;
+import de.officeryoda.bot.discord.Music.Queue;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class MusicQueue {
 
-    public static class CmdQueue implements CommandExecuter {
+    public static class CmdQueue implements CommandExecutor {
 
         private final CantinaBand cantinaBand;
         private final MusicMaster master;
@@ -121,7 +121,7 @@ public class MusicQueue {
         }
     }
 
-    public static class CmdShuffle implements CommandExecuter {
+    public static class CmdShuffle implements CommandExecutor {
 
         private final MusicMaster master;
 
@@ -146,7 +146,7 @@ public class MusicQueue {
         }
     }
 
-    public static class CmdSkip implements CommandExecuter {
+    public static class CmdSkip implements CommandExecutor {
 
         private final MusicMaster master;
 

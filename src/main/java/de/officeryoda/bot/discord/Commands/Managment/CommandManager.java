@@ -1,12 +1,11 @@
-package de.officeryoda.Commands.Managment;
+package de.officeryoda.bot.discord.Commands.Managment;
 
-import de.officeryoda.Commands.Executer.MusicBasic;
-import de.officeryoda.Commands.Executer.MusicMisc;
-import de.officeryoda.Commands.Executer.CmdPing;
-import de.officeryoda.Commands.Executer.MusicQueue;
+import de.officeryoda.bot.discord.Commands.Executor.MusicBasic;
+import de.officeryoda.bot.discord.Commands.Executor.MusicMisc;
+import de.officeryoda.bot.discord.Commands.Executor.CmdPing;
+import de.officeryoda.bot.discord.Commands.Executor.MusicQueue;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -23,7 +22,7 @@ public class CommandManager {
 
     private JDA jda;
 
-    private Map<String, CommandExecuter> commandExecuter;
+    private Map<String, CommandExecutor> commandExecuter;
 
     public CommandManager(JDA jda) {
         if(INSTANCE == null)
@@ -57,7 +56,7 @@ public class CommandManager {
 
         for(Command cmd : commands) {
             jda.upsertCommand(cmd.cmdData.setGuildOnly(true)).queue();
-            commandExecuter.put(cmd.cmdData.getName(), cmd.commandExecuter);
+            commandExecuter.put(cmd.cmdData.getName(), cmd.commandExecutor);
         }
     }
 
@@ -65,5 +64,5 @@ public class CommandManager {
         commandExecuter.getOrDefault(command, e -> e.reply("This Command has not been implemented yet.").setEphemeral(true).queue()).executeCommand(event);
     }
 
-    private record Command(CommandData cmdData, CommandExecuter commandExecuter) {}
+    private record Command(CommandData cmdData, CommandExecutor commandExecutor) {}
 }

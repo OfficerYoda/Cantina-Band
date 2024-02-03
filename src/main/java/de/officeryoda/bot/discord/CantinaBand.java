@@ -1,10 +1,10 @@
-package de.officeryoda;
+package de.officeryoda.bot.discord;
 
-import de.officeryoda.Commands.Managment.CommandManager;
-import de.officeryoda.Listener.ButtonListener;
-import de.officeryoda.Listener.CommandListener;
-import de.officeryoda.Listener.ReadyListener;
-import de.officeryoda.Music.MusicMaster;
+import de.officeryoda.bot.discord.Commands.Managment.CommandManager;
+import de.officeryoda.bot.discord.Listener.ButtonListener;
+import de.officeryoda.bot.discord.Listener.CommandListener;
+import de.officeryoda.bot.discord.Listener.ReadyListener;
+import de.officeryoda.bot.discord.Music.MusicMaster;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
