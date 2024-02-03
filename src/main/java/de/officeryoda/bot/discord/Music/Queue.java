@@ -120,6 +120,7 @@ public class Queue {
     }
 
     public List<AudioTrack> getQueueList() {
+        if(getQueueLength() == 0) return new ArrayList<>();
         return trackList.subList(queuePosition, trackList.size() - 1);
     }
 

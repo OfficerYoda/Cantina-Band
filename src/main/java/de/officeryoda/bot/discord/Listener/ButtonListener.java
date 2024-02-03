@@ -7,6 +7,7 @@ import de.officeryoda.bot.discord.Miscellaneous.ActionRows;
 import de.officeryoda.bot.discord.Music.MusicController;
 import de.officeryoda.bot.discord.Music.MusicMaster;
 import de.officeryoda.bot.discord.Music.Queue;
+import de.officeryoda.bot.discord.exceptions.ShouldNotGetHereException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -19,7 +20,7 @@ import java.io.InputStream;
 
 public class ButtonListener extends ListenerAdapter {
 
-    private final int FAR_JUMP_AMOUNT = 10;
+    private final static int QUEUE_FAR_JUMP_AMOUNT = 10;
 
     private final MusicMaster master;
     private final MusicQueue.CmdQueue cmdQueue;
@@ -37,32 +38,32 @@ public class ButtonListener extends ListenerAdapter {
 
     private void onQueueButton(ButtonInteractionEvent event) {
         Guild guild = event.getGuild();
-        assert guild != null;
         MusicController controller = master.getController(guild.getIdLong());
 
         MessageEmbed msgEmbed = event.getMessage().getEmbeds().get(0);
         MessageEmbed.Footer footer = msgEmbed.getFooter();
-        assert footer != null;
-        String[] pageInfo = footer.getText().split("/");
 
         int crntPage, maxPage;
-
         if(footer.getIconUrl() == null) { // when a queue exist the footer doesn't contain a profile picture
-            crntPage = Integer.parseInt(pageInfo[0].substring(5));
-            maxPage = (int) Math.ceil(controller.getQueue().getQueueLength() / 10f);
+            crntPage = Character.getNumericValue(footer.getText().charAt(5)); // from (page 2/3) '2' is at
+            maxPage = MusicQueue.CmdQueue.maxQueuePages(controller.getQueue().getQueueLength());
         } else {
             event.reply("This button won't do anything so don't embarrass yourself and stop trying.").setEphemeral(true).queue();
             return;
         }
 
+        if(crntPage < 0)
+            throw new ShouldNotGetHereException();
+
         int targetPage = crntPage;
         switch(event.getComponentId()) {
-            case "queueFarPrevious" -> targetPage -= FAR_JUMP_AMOUNT;
+            case "queueFarPrevious" -> targetPage -= QUEUE_FAR_JUMP_AMOUNT;
             case "queuePrevious" -> targetPage -= 1;
             case "queueNext" -> targetPage += 1;
-            case "queueFarNext" -> targetPage += FAR_JUMP_AMOUNT;
+            case "queueFarNext" -> targetPage += QUEUE_FAR_JUMP_AMOUNT;
             case "queueShuffle" -> controller.getQueue().shuffle();
         }
+
 
         int clampedPage = clamp(targetPage, 1, maxPage);
         event.editMessageEmbeds(cmdQueue.getQueuePageEmbed(controller, clampedPage)).queue();
@@ -73,9 +74,7 @@ public class ButtonListener extends ListenerAdapter {
     }
 
     private void onPlayerButton(ButtonInteractionEvent event) {
-
         Guild guild = event.getGuild();
-        assert guild != null;
         MusicController controller = master.getController(guild.getIdLong());
         Queue queue = controller.getQueue();
 

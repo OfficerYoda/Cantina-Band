@@ -54,8 +54,7 @@ public class MusicMisc {
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
             Guild guild = event.getGuild();
-            GuildVoiceState state;
-            AudioChannelUnion vc;
+
             if(event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
                 event.reply("You must be in our voice channel to use that!").queue();
                 return;
@@ -68,7 +67,7 @@ public class MusicMisc {
                 event.reply("The band is already taking a rest.").queue();
             } else {
                 player.setPaused(true);
-                event.reply("Stopped playing.").queue();
+                event.reply("Paused playing.").queue();
             }
         }
     }

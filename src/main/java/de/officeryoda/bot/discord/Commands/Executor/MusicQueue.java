@@ -33,7 +33,6 @@ public class MusicQueue {
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
             Guild guild = event.getGuild();
-            assert guild != null;
             MusicController controller = master.getController(guild.getIdLong());
             Queue queue = controller.getQueue();
 
@@ -64,8 +63,8 @@ public class MusicQueue {
             sendQueuePage(event, controller, page);
         }
 
-        private void sendQueuePage(SlashCommandInteractionEvent event, MusicController controller, int page) {
-            List<Button> navRow = ActionRows.queueNavigationRow(page, pagesToMaxPages(controller.getQueue().getQueueLength()));
+        public void sendQueuePage(SlashCommandInteractionEvent event, MusicController controller, int page) {
+            List<Button> navRow = ActionRows.queueNavigationRow(page, maxQueuePages(controller.getQueue().getQueueLength() + 1));
             List<Button> secRow = ActionRows.queueSecondaryRow();
             MessageEmbed embed = getQueuePageEmbed(controller, page);
             event.replyEmbeds(embed).addActionRow(navRow).addActionRow(secRow).queue();
@@ -83,9 +82,9 @@ public class MusicQueue {
             embed.addField(":arrow_forward: Currently playing",
                     (controller.getPlayer().getPlayingTrack() != null) ? controller.getPlayer().getPlayingTrack().getInfo().title : "*No Song playing*", false);
 
-            if(queue.size() > 0) {
+            if(!queue.isEmpty()) {
                 int queueSize = queue.size();
-                int maxPage = pagesToMaxPages(queueSize);
+                int maxPage = maxQueuePages(queueSize);
                 if(page <= 0) page = 1;
                 if(page > queueSize) page = maxPage;
 
@@ -115,9 +114,9 @@ public class MusicQueue {
             return embed.build();
         }
 
-
-        private int pagesToMaxPages(int pages) {
-            return (int) Math.ceil(pages / 10f);
+        public static int maxQueuePages(int queueSize) {
+            final double maxTracksPerPage = 10.0;
+            return (int) Math.ceil(queueSize / maxTracksPerPage);
         }
     }
 
@@ -158,8 +157,7 @@ public class MusicQueue {
         public void executeCommand(SlashCommandInteractionEvent event) {
             System.out.println("SKIP");
             Guild guild = event.getGuild();
-            GuildVoiceState state;
-            AudioChannelUnion vc;
+
             if(event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
                 event.reply("You must be in our voice channel to use that!").queue();
                 return;
@@ -167,13 +165,15 @@ public class MusicQueue {
 
             MusicController controller = master.getController(guild.getIdLong());
 
-            if(controller.getQueue().getQueueLength() > 0)
+            if(controller.getQueue().getQueueLength() > 0) {
+
                 event.reply("Skipping the current song.").queue(msg -> {
                     controller.getQueue().next();
                     msg.editOriginal("Skipped the current song").queue();
                 });
-            else
+            } else {
                 event.reply("There are no songs to skip to").queue();
+            }
         }
     }
 }
