@@ -22,7 +22,7 @@ public class CommandManager {
 
     private JDA jda;
 
-    private Map<String, CommandExecutor> commandExecuter;
+    private Map<String, CommandExecutor> commandExecutor;
 
     public CommandManager(JDA jda) {
         if(INSTANCE == null)
@@ -31,7 +31,7 @@ public class CommandManager {
             return;
 
         this.jda = jda;
-        commandExecuter = new HashMap<>();
+        commandExecutor = new HashMap<>();
     }
 
     public void registerCommands() {
@@ -56,12 +56,12 @@ public class CommandManager {
 
         for(Command cmd : commands) {
             jda.upsertCommand(cmd.cmdData.setGuildOnly(true)).queue();
-            commandExecuter.put(cmd.cmdData.getName(), cmd.commandExecutor);
+            commandExecutor.put(cmd.cmdData.getName(), cmd.commandExecutor);
         }
     }
 
     public void executeCommand(String command, SlashCommandInteractionEvent event) {
-        commandExecuter.getOrDefault(command, e -> e.reply("This Command has not been implemented yet.").setEphemeral(true).queue()).executeCommand(event);
+        commandExecutor.getOrDefault(command, e -> e.reply("This Command has not been implemented yet.").setEphemeral(true).queue()).executeCommand(event);
     }
 
     private record Command(CommandData cmdData, CommandExecutor commandExecutor) {}

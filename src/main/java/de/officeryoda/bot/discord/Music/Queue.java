@@ -5,11 +5,12 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import de.officeryoda.bot.discord.CantinaBand;
 import de.officeryoda.bot.discord.Miscellaneous.ActionRows;
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.utils.FileUpload;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -28,6 +29,8 @@ public class Queue {
      */
     private int queuePosition;
     private AudioTrack lastLoopingTrack;
+    @Setter
+    @Getter
     private MessageChannelUnion cmdChannel;
 
     public Queue(MusicController controller) {
@@ -148,18 +151,15 @@ public class Queue {
 
     public EmbedBuilder getPlayEmbed(AudioTrack track) {
         AudioTrackInfo info = track.getInfo();
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.setColor(Color.decode("#00e640"));
-        embed.setTitle(":notes: playing: **" + info.title + "**", info.uri);
-
         String time = songLengthToTime(info.length);
-
         String url = info.uri;
-        embed.addField(info.author, "[" + info.title + "](" + url + ")", false);
-        embed.addField("Length: ", info.isStream ? ":red_circle: STREAM" : time, true);
-        embed.setFooter(cantinaBand.getEmbedFooterTime(), cantinaBand.getProfilePictureUrl());
 
-        return embed;
+        return new EmbedBuilder()
+                .setColor(CantinaBand.EMBED_COLOR)
+                .setTitle(":notes: playing: **" + info.title + "**", info.uri)
+                .addField(info.author, "[" + info.title + "](" + url + ")", false)
+                .addField("Length: ", info.isStream ? ":red_circle: STREAM" : time, true)
+                .setFooter(cantinaBand.getEmbedFooterTime(), cantinaBand.getProfilePictureUrl());
     }
 
     public InputStream getThumbnail(AudioTrack track) {
@@ -192,13 +192,5 @@ public class Queue {
 
     public AudioTrack getCurrentTrack() {
         return trackList.get(queuePosition - 1);
-    }
-
-    public MessageChannelUnion getCmdChannel() {
-        return cmdChannel;
-    }
-
-    public void setCmdChannel(MessageChannelUnion cmdChannel) {
-        this.cmdChannel = cmdChannel;
     }
 }

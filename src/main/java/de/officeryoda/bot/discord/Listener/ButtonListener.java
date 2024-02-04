@@ -48,7 +48,7 @@ public class ButtonListener extends ListenerAdapter {
             crntPage = Character.getNumericValue(footer.getText().charAt(5)); // from (page 2/3) '2' is at
             maxPage = MusicQueue.CmdQueue.maxQueuePages(controller.getQueue().getQueueLength());
         } else {
-            event.reply("This button won't do anything so don't embarrass yourself and stop trying.").setEphemeral(true).queue();
+            event.reply("This button won't do anything, so don't embarrass yourself and stop trying.").setEphemeral(true).queue();
             return;
         }
 

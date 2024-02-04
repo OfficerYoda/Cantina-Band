@@ -9,9 +9,7 @@ import de.officeryoda.bot.discord.Music.MusicMaster;
 import de.officeryoda.bot.discord.Music.Queue;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -30,6 +28,11 @@ public class MusicQueue {
             this.master = cantinaBand.getMusicMaster();
         }
 
+        public static int maxQueuePages(int queueSize) {
+            final double maxTracksPerPage = 10.0;
+            return (int) Math.ceil(queueSize / maxTracksPerPage);
+        }
+
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
             Guild guild = event.getGuild();
@@ -45,9 +48,7 @@ public class MusicQueue {
                     }
 //                    case "page"-- > sendQueuePageFromArg(event, controller); // same as default
                     case "shuffle" -> new CmdShuffle().executeCommand(event);
-                    default -> {
-                        sendQueuePageFromArg(event, controller);
-                    }
+                    default -> sendQueuePageFromArg(event, controller);
                 }
             } else {
                 sendQueuePageFromArg(event, controller);
@@ -73,14 +74,13 @@ public class MusicQueue {
         public MessageEmbed getQueuePageEmbed(MusicController controller, int page) {
 
             List<AudioTrack> queue = controller.getQueue().getQueueList();
-            EmbedBuilder embed = new EmbedBuilder();
             StringBuilder builder = new StringBuilder();
-            embed.setFooter(cantinaBand.getEmbedFooterTime(), cantinaBand.getProfilePictureUrl());
-
-            embed.setTitle(":notes: **Current Queue | ** " + (queue.size() == 1 ? queue.size() + " song" : queue.size() + " songs"));
-            //currently playing
-            embed.addField(":arrow_forward: Currently playing",
-                    (controller.getPlayer().getPlayingTrack() != null) ? controller.getPlayer().getPlayingTrack().getInfo().title : "*No Song playing*", false);
+            EmbedBuilder embed = new EmbedBuilder()
+                    .setColor(CantinaBand.EMBED_COLOR)
+                    .setFooter(cantinaBand.getEmbedFooterTime(), cantinaBand.getProfilePictureUrl())
+                    .setTitle(":notes: **Current Queue | ** " + (queue.size() == 1 ? queue.size() + " song" : queue.size() + " songs"))
+                    .addField(":arrow_forward: Currently playing",
+                            (controller.getPlayer().getPlayingTrack() != null) ? controller.getPlayer().getPlayingTrack().getInfo().title : "*No Song playing*", false);
 
             if(!queue.isEmpty()) {
                 int queueSize = queue.size();
@@ -113,11 +113,6 @@ public class MusicQueue {
 
             return embed.build();
         }
-
-        public static int maxQueuePages(int queueSize) {
-            final double maxTracksPerPage = 10.0;
-            return (int) Math.ceil(queueSize / maxTracksPerPage);
-        }
     }
 
     public static class CmdShuffle implements CommandExecutor {
@@ -131,8 +126,6 @@ public class MusicQueue {
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
             Guild guild = event.getGuild();
-            GuildVoiceState state;
-            AudioChannelUnion vc;
             if(event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
                 event.reply("You must be in our voice channel to use that!").queue();
                 return;
@@ -155,7 +148,6 @@ public class MusicQueue {
 
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
-            System.out.println("SKIP");
             Guild guild = event.getGuild();
 
             if(event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {

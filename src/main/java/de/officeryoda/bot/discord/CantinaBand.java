@@ -5,23 +5,27 @@ import de.officeryoda.bot.discord.Listener.ButtonListener;
 import de.officeryoda.bot.discord.Listener.CommandListener;
 import de.officeryoda.bot.discord.Listener.ReadyListener;
 import de.officeryoda.bot.discord.Music.MusicMaster;
+import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
+import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 public class CantinaBand {
 
+    public final static Color EMBED_COLOR = Color.DARK_GRAY;
     public static CantinaBand INSTANCE;
-
-    private final JDA jda;
-    private final MusicMaster musicMaster;
+    @Getter
     private static long startTime;
-
+    @Getter
+    private final JDA jda;
+    @Getter
+    private final MusicMaster musicMaster;
     private final HashMap<Long, Guild> guilds;
 
     public CantinaBand() {
@@ -51,6 +55,11 @@ public class CantinaBand {
         guilds = new HashMap<>();
     }
 
+    public static void main(String[] args) {
+        startTime = System.currentTimeMillis();
+        new CantinaBand();
+    }
+
     private void shutdown() {
         if(jda != null)
             jda.shutdown();
@@ -68,28 +77,11 @@ public class CantinaBand {
         return jda.getSelfUser().getAvatarUrl();
     }
 
-    public JDA getJda() {
-        return jda;
-    }
-
-    public MusicMaster getMusicMaster() {
-        return musicMaster;
-    }
-
-    public static long getStartTime() {
-        return startTime;
-    }
-
     public void addGuild(Guild guild) {
         guilds.put(guild.getIdLong(), guild);
     }
 
     public Guild getGuildById(long guildId) {
         return guilds.get(guildId);
-    }
-
-    public static void main(String[] args) {
-        startTime = System.currentTimeMillis();
-        new CantinaBand();
     }
 }

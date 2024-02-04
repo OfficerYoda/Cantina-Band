@@ -39,15 +39,11 @@ public class AudioLoadResult implements AudioLoadResultHandler {
             return;
         }
 
-        int added = 0;
-        for(AudioTrack track : playlist.getTracks()) {
-            queue.addTrackToQueue(track, true);
-            added++;
-        }
+        playlist.getTracks().forEach(track -> queue.addTrackToQueue(track, true));
 
-        EmbedBuilder embed = new EmbedBuilder().setColor(Color.RED)
-                .setTitle("Playlist added to queue | " + playlist.getName())
-                .setDescription("Added ``" + added + "`` tracks to queue, now ``" + queue.getQueueLength() + "``.")
+        EmbedBuilder embed = new EmbedBuilder().setColor(CantinaBand.EMBED_COLOR)
+                .setTitle("Playlist `" + playlist.getName() + "` added to queue")
+                .setDescription("Added ``" + playlist.getTracks().size() + "`` tracks to queue; now ``" + queue.getQueueLength() + "``.")
                 .setFooter(cantinaBand.getEmbedFooterTime(), cantinaBand.getProfilePictureUrl());
 
         MessageChannelUnion channel = controller.getQueue().getCmdChannel();
@@ -61,6 +57,9 @@ public class AudioLoadResult implements AudioLoadResultHandler {
 
     @Override
     public void loadFailed(FriendlyException exception) {
+        controller.getQueue().getCmdChannel().sendMessage(
+                "Loading has failed." +
+                "\nSeverity: `" + exception.severity + "`.").queue();
         exception.printStackTrace();
     }
 }

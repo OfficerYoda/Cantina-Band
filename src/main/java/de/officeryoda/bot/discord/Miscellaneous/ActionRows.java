@@ -25,11 +25,11 @@ public class ActionRows {
 
     public static List<Button> queueSecondaryRow() {
         Button b5 = Button.primary("queueShuffle", Emoji.fromUnicode("\uD83D\uDD00"));
-        Button b6 = Button.primary("queueRefresh", Emoji.fromUnicode("\uD83D\uDD04"));
+//        Button b6 = Button.primary("queueRefresh", Emoji.fromUnicode("\uD83D\uDD04"));
 
         List<Button> buttons = new ArrayList<>();
         buttons.add(b5);
-        buttons.add(b6);
+//        buttons.add(b6);
 
         return buttons;
     }
