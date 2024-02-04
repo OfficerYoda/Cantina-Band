@@ -46,7 +46,6 @@ public class MusicQueue {
                         queue.clear();
                         event.reply("Queue cleared.").queue();
                     }
-//                    case "page"-- > sendQueuePageFromArg(event, controller); // same as default
                     case "shuffle" -> new CmdShuffle().executeCommand(event);
                     default -> sendQueuePageFromArg(event, controller);
                 }
@@ -57,15 +56,13 @@ public class MusicQueue {
 
         private void sendQueuePageFromArg(SlashCommandInteractionEvent event, MusicController controller) {
             OptionMapping pageArg = event.getOption("operation");
-            int page = 0;
-            if(pageArg != null) {
-                page = Integer.parseInt(pageArg.getAsString());
-            }
+            int page = pageArg != null ? Integer.parseInt(pageArg.getAsString()) : 0;
+
             sendQueuePage(event, controller, page);
         }
 
         public void sendQueuePage(SlashCommandInteractionEvent event, MusicController controller, int page) {
-            List<Button> navRow = ActionRows.queueNavigationRow(page, maxQueuePages(controller.getQueue().getQueueLength() + 1));
+            List<Button> navRow = ActionRows.queueNavigationRow();
             List<Button> secRow = ActionRows.queueSecondaryRow();
             MessageEmbed embed = getQueuePageEmbed(controller, page);
             event.replyEmbeds(embed).addActionRow(navRow).addActionRow(secRow).queue();
@@ -125,13 +122,9 @@ public class MusicQueue {
 
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
-            Guild guild = event.getGuild();
-            if(event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
-                event.reply("You must be in our voice channel to use that!").queue();
-                return;
-            }
+            if(MusicMisc.differentVoiceChannel(event)) return;
 
-            MusicController controller = master.getController(guild.getIdLong());
+            MusicController controller = master.getController(event.getGuild().getIdLong());
             controller.getQueue().shuffle();
 
             event.reply("Shuffled the queue.").queue();
@@ -148,23 +141,17 @@ public class MusicQueue {
 
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
-            Guild guild = event.getGuild();
+            if(MusicMisc.differentVoiceChannel(event)) return;
 
-            if(event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
-                event.reply("You must be in our voice channel to use that!").queue();
-                return;
-            }
+            MusicController controller = master.getController(event.getGuild().getIdLong());
 
-            MusicController controller = master.getController(guild.getIdLong());
-
-            if(controller.getQueue().getQueueLength() > 0) {
-
+            if (controller.getQueue().getQueueLength() > 0) {
                 event.reply("Skipping the current song.").queue(msg -> {
                     controller.getQueue().next();
-                    msg.editOriginal("Skipped the current song").queue();
+                    msg.editOriginal("Skipped the current song.").queue();
                 });
             } else {
-                event.reply("There are no songs to skip to").queue();
+                event.reply("There are no songs to skip to.").queue();
             }
         }
     }

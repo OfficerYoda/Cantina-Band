@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ActionRows {
 
-    public static List<Button> queueNavigationRow(int page, int maxPage) {
+    public static List<Button> queueNavigationRow() {
         Button b1 = Button.primary("queueFarPrevious", Emoji.fromUnicode("⏪"));
         Button b2 = Button.primary("queuePrevious", Emoji.fromUnicode("◀️"));
         Button b3 = Button.primary("queueNext", Emoji.fromUnicode("▶️"));

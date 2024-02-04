@@ -43,14 +43,19 @@ public class ButtonListener extends ListenerAdapter {
         MessageEmbed msgEmbed = event.getMessage().getEmbeds().get(0);
         MessageEmbed.Footer footer = msgEmbed.getFooter();
 
-        int crntPage, maxPage;
-        if(footer.getIconUrl() == null) { // when a queue exist the footer doesn't contain a profile picture
-            crntPage = Character.getNumericValue(footer.getText().charAt(5)); // from (page 2/3) '2' is at
-            maxPage = MusicQueue.CmdQueue.maxQueuePages(controller.getQueue().getQueueLength());
-        } else {
-            event.reply("This button won't do anything, so don't embarrass yourself and stop trying.").setEphemeral(true).queue();
+        int crntPage = 1;
+
+        if (footer.getIconUrl() == null) {
+            // When a queue exists, the footer doesn't contain a profile picture
+            crntPage = Character.getNumericValue(footer.getText().charAt(5)); // Extract page number ('2') from ("page 2/3")
+        } else if (controller.getQueue().getQueueLength() == 0) {
+            event.reply("This button won't do anything, so don't embarrass yourself and stop trying.")
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
+
+        int maxPage = MusicQueue.CmdQueue.maxQueuePages(controller.getQueue().getQueueLength());
 
         if(crntPage < 0)
             throw new ShouldNotGetHereException();
@@ -68,7 +73,7 @@ public class ButtonListener extends ListenerAdapter {
         int clampedPage = clamp(targetPage, 1, maxPage);
         event.editMessageEmbeds(cmdQueue.getQueuePageEmbed(controller, clampedPage)).queue();
 
-        ActionRow navRow = ActionRow.of(ActionRows.queueNavigationRow(clampedPage, maxPage));
+        ActionRow navRow = ActionRow.of(ActionRows.queueNavigationRow());
         ActionRow secRow = ActionRow.of(ActionRows.queueSecondaryRow());
         event.getMessage().editMessageComponents(navRow, secRow).queue();
     }
@@ -98,7 +103,7 @@ public class ButtonListener extends ListenerAdapter {
         event.editMessageEmbeds(embed.build()).setActionRow(ActionRows.playerRow(queue.isPlaying())).queue();
     }
 
-    public int clamp(int value, int min, int max) {
+    private int clamp(int value, int min, int max) {
         return Math.max(min, Math.min(max, value));
     }
 }

@@ -41,12 +41,7 @@ public class MusicBasic {
             AudioPlayerManager playerManager = master.getPlayerManager();
             AudioManager manager = guild.getAudioManager();
 
-            if(queue.getQueueLength() != 0) {
-                if(guild.getSelfMember().getVoiceState().getChannel() != event.getMember().getVoiceState().getChannel()) { // check if bot channel is same as sender channel
-                    event.reply("I'm not in your voice channel").setEphemeral(true).queue();
-                    return;
-                }
-            }
+            if(queue.getQueueLength() != 0 && MusicMisc.differentVoiceChannel(event)) return;
 
             // failure is always a Throwable
             event.reply("Loading").queue(
@@ -78,14 +73,9 @@ public class MusicBasic {
 
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
-            Guild guild = event.getGuild();
-            GuildVoiceState state;
-            AudioChannelUnion vc;
-            if(event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
-                event.reply("You must be in our voice channel to use that!").queue();
-                return;
-            }
+            if(MusicMisc.differentVoiceChannel(event)) return;
 
+            Guild guild = event.getGuild();
             MusicController controller = master.getController(guild.getIdLong());
             AudioPlayer player = controller.getPlayer();
 

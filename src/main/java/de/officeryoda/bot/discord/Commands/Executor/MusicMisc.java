@@ -6,8 +6,6 @@ import de.officeryoda.bot.discord.Commands.Managment.CommandExecutor;
 import de.officeryoda.bot.discord.Music.MusicController;
 import de.officeryoda.bot.discord.Music.MusicMaster;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
@@ -23,13 +21,9 @@ public class MusicMisc {
 
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
-            Guild guild = event.getGuild();
-            if(event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
-                event.reply("You must be in our voice channel to use that!").queue();
-                return;
-            }
+            if(MusicMisc.differentVoiceChannel(event)) return;
 
-            MusicController controller = master.getController(guild.getIdLong());
+            MusicController controller = master.getController(event.getGuild().getIdLong());
             OptionMapping messageOption = event.getOption("volume");
             if(messageOption == null) {
                 event.reply("The volume is `" + controller.getVolume() + "`.").queue();
@@ -51,14 +45,9 @@ public class MusicMisc {
 
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
-            Guild guild = event.getGuild();
+            if(MusicMisc.differentVoiceChannel(event)) return;
 
-            if(event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
-                event.reply("You must be in our voice channel to use that!").queue();
-                return;
-            }
-
-            MusicController controller = master.getController(guild.getIdLong());
+            MusicController controller = master.getController(event.getGuild().getIdLong());
             AudioPlayer player = controller.getPlayer();
 
             if(player.isPaused()) {
@@ -80,13 +69,9 @@ public class MusicMisc {
 
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
-            Guild guild = event.getGuild();
-            if(event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
-                event.reply("You must be in our voice channel to use that!").queue();
-                return;
-            }
+            if(MusicMisc.differentVoiceChannel(event)) return;
 
-            MusicController controller = master.getController(guild.getIdLong());
+            MusicController controller = master.getController(event.getGuild().getIdLong());
             AudioPlayer player = controller.getPlayer();
 
             if(player.isPaused()) {
@@ -108,14 +93,9 @@ public class MusicMisc {
 
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
-            Guild guild = event.getGuild();
-            if(event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
-                event.reply("You must be in our voice channel to use that!").queue();
-                return;
-            }
+            if(MusicMisc.differentVoiceChannel(event)) return;
 
-            MusicController controller = master.getController(guild.getIdLong());
-
+            MusicController controller = master.getController(event.getGuild().getIdLong());
             OptionMapping messageOption = event.getOption("looping");
 
             if(messageOption == null) {
@@ -140,19 +120,23 @@ public class MusicMisc {
 
         @Override
         public void executeCommand(SlashCommandInteractionEvent event) {
-            Guild guild = event.getGuild();
-            if(event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
-                event.reply("You must be in our voice channel to use that!").queue();
-                return;
-            }
+            if(MusicMisc.differentVoiceChannel(event)) return;
 
-            MusicController controller = master.getController(guild.getIdLong());
-
+            MusicController controller = master.getController(event.getGuild().getIdLong());
             controller.setLooping(!controller.isLooping());
 
             event.reply("The band is "
                     + (controller.isLooping() ? "" : "not") +
                     " playing den selben Song nochmal.").queue();
         }
+    }
+
+    public static boolean differentVoiceChannel(SlashCommandInteractionEvent event) {
+        Guild guild = event.getGuild();
+        if (event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
+            event.reply("You must be in our voice channel to use that!").queue();
+            return true;
+        }
+        return false;
     }
 }

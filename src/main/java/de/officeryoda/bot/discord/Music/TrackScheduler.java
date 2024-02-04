@@ -1,6 +1,5 @@
 package de.officeryoda.bot.discord.Music;
 
-import java.util.HashMap;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -8,39 +7,23 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
 import de.officeryoda.bot.discord.CantinaBand;
-import net.dv8tion.jda.api.entities.Guild;
 
 public class TrackScheduler extends AudioEventAdapter {
 
-    private CantinaBand cantinaBand;
-    private MusicMaster master;
-    private HashMap<Guild, String> lastUri;
+    private final CantinaBand cantinaBand;
+    private final MusicMaster master;
 
     public TrackScheduler(MusicMaster master) {
         this.cantinaBand = CantinaBand.INSTANCE;
         this.master = master;
-        lastUri = new HashMap<>();
-    }
-
-    @Override
-    public void onPlayerResume(AudioPlayer player) {
-        //		Main.getMainGui().updateConsole();
-    }
-
-    @Override
-    public void onPlayerPause(AudioPlayer player) {
-        //		Main.getMainGui().updateConsole();
     }
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         Long guildId = master.getGuildIdByPlayerHash(player.hashCode());
-        Guild guild = cantinaBand.getGuildById(guildId);
         MusicController controller = master.getController(guildId);
         Queue queue = controller.getQueue();
         queue.setPlaying(true);
-
-        setLastUri(guild, track.getInfo().uri);
     }
 
     @Override
@@ -48,7 +31,6 @@ public class TrackScheduler extends AudioEventAdapter {
         if(!endReason.mayStartNext) return;
 
         Long guildId = master.getGuildIdByPlayerHash(player.hashCode());
-        Guild guild = cantinaBand.getGuildById(guildId);
         MusicController controller = master.getController(guildId);
         Queue queue = controller.getQueue();
 
@@ -64,13 +46,5 @@ public class TrackScheduler extends AudioEventAdapter {
         // endReason == REPLACED: Another track started playing while this had not finished
         // endReason == CLEANUP: Player hasn't been queried for a while, if you want you can put a
         //                       clone of this back to your queue
-    }
-
-    public String getLastUri(Guild guild) {
-        return lastUri.getOrDefault(guild, "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley");
-    }
-
-    public void setLastUri(Guild guild, String value) {
-        lastUri.put(guild, value);
     }
 }

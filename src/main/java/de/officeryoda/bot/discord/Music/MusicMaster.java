@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import de.officeryoda.bot.discord.CantinaBand;
+import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class MusicMaster {
 
     private final CantinaBand cantinaBand;
+    @Getter
     private final AudioPlayerManager playerManager;
     private final Map<Long, MusicController> controller;
 
@@ -44,9 +46,5 @@ public class MusicMaster {
                 return controller.getGuild().getIdLong();
 
         return -1L;
-    }
-
-    public AudioPlayerManager getPlayerManager() {
-        return playerManager;
     }
 }

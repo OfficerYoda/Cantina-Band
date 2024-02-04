@@ -1,12 +1,9 @@
 package de.officeryoda.bot.discord.Music;
 
-import java.awt.Color;
-
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-
 import de.officeryoda.bot.discord.CantinaBand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
@@ -14,13 +11,11 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 public class AudioLoadResult implements AudioLoadResultHandler {
 
     private final CantinaBand cantinaBand;
-    private final MusicMaster master;
     private final MusicController controller;
     private final String sUrl;
 
     public AudioLoadResult(MusicController controller, String sUrl) {
         this.cantinaBand = CantinaBand.INSTANCE;
-        this.master = controller.getMaster();
         this.controller = controller;
         this.sUrl = sUrl;
     }
@@ -59,7 +54,6 @@ public class AudioLoadResult implements AudioLoadResultHandler {
     public void loadFailed(FriendlyException exception) {
         controller.getQueue().getCmdChannel().sendMessage(
                 "Loading has failed." +
-                "\nSeverity: `" + exception.severity + "`.").queue();
-        exception.printStackTrace();
+                        "\nSeverity: `" + exception.severity + "`.").queue();
     }
 }
