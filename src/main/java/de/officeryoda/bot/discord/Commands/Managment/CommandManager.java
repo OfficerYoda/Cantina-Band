@@ -36,7 +36,7 @@ public class CommandManager {
 
     public void registerCommands() {
         OptionData urlArg = new OptionData(OptionType.STRING, "song-name", "The song name or URL of the song", true);
-        OptionData volumeArg = new OptionData(OptionType.INTEGER, "volume", "The volume you want to set the bot to");
+        OptionData volumeArg = new OptionData(OptionType.INTEGER, "volume", "The volume you want to set the bot to").setRequiredRange(0, Integer.MAX_VALUE);
         OptionData looping = new OptionData(OptionType.BOOLEAN, "looping", "The state of looping");
         OptionData queue = new OptionData(OptionType.STRING, "operation", "Queue operation arg").addChoice("shuffle", "shuffle").addChoice("clear", "clear");
 
