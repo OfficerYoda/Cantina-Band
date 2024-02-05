@@ -11,6 +11,15 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 public class MusicMisc {
 
+    public static boolean differentVoiceChannel(SlashCommandInteractionEvent event) {
+        Guild guild = event.getGuild();
+        if(event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
+            event.reply("You must be in our voice channel to use that!").queue();
+            return true;
+        }
+        return false;
+    }
+
     public static class CmdVolume implements CommandExecutor {
 
         private final MusicMaster master;
@@ -29,8 +38,8 @@ public class MusicMisc {
                 event.reply("The volume is `" + controller.getVolume() + "`.").queue();
             } else {
                 int volume = messageOption.getAsInt();
-                    controller.setVolume(volume);
-                    event.reply("Set the volume to `" + volume + "`.").queue();
+                controller.setVolume(volume);
+                event.reply("Set the volume to `" + volume + "`.").queue();
             }
         }
     }
@@ -98,15 +107,13 @@ public class MusicMisc {
             MusicController controller = master.getController(event.getGuild().getIdLong());
             OptionMapping messageOption = event.getOption("looping");
 
-            if(messageOption == null) {
-                event.reply("The band is currently "
-                        + (controller.isLooping() ? "" : "not ") +
-                        "playing den selben Song nochmal.").queue();
-            } else {
-                boolean looping = messageOption.getAsBoolean();
-                controller.setLooping(looping);
-                event.reply("The band is playing den selben Song nochmal.").queue();
+            if(messageOption != null) {
+                controller.setLooping(messageOption.getAsBoolean());
             }
+
+            event.reply("The band is currently "
+                    + (controller.isLooping() ? "" : "not ") +
+                    "playing den selben Song nochmal.").queue();
         }
     }
 
@@ -125,18 +132,10 @@ public class MusicMisc {
             MusicController controller = master.getController(event.getGuild().getIdLong());
             controller.setLooping(!controller.isLooping());
 
+            // use: ❌ ✅
             event.reply("The band is "
                     + (controller.isLooping() ? "" : "not") +
                     " playing den selben Song nochmal.").queue();
         }
-    }
-
-    public static boolean differentVoiceChannel(SlashCommandInteractionEvent event) {
-        Guild guild = event.getGuild();
-        if (event.getMember().getVoiceState().getChannel() != guild.getAudioManager().getConnectedChannel()) {
-            event.reply("You must be in our voice channel to use that!").queue();
-            return true;
-        }
-        return false;
     }
 }
