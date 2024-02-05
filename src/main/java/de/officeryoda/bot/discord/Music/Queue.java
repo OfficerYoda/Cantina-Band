@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.io.IOException;
@@ -89,11 +88,7 @@ public class Queue {
         if(player.getPlayingTrack() == null) {
             next();
         } else if(!isPlaylist) {
-            EmbedBuilder embed = new EmbedBuilder()
-                    .setColor(CantinaBand.EMBED_COLOR)
-                    .setTitle(":notes: Added **" + track.getInfo().title + "** to queue.");
-
-            cmdChannel.sendMessageEmbeds(embed.build()).queue();
+            cmdChannel.sendMessageEmbeds(CantinaBand.messageAsEmbed(":notes: Added **" + track.getInfo().title + "** to queue.")).queue();
         }
     }
 

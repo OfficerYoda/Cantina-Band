@@ -6,8 +6,11 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.officeryoda.bot.discord.CantinaBand;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+
+import java.awt.*;
+
+import static de.officeryoda.bot.discord.CantinaBand.messageAsEmbed;
 
 public class AudioLoadResult implements AudioLoadResultHandler {
 
@@ -49,14 +52,12 @@ public class AudioLoadResult implements AudioLoadResultHandler {
 
     @Override
     public void noMatches() {
-        controller.getQueue().getCmdChannel().sendMessage("No Video or Song found.").queue();
+        controller.getQueue().getCmdChannel().sendMessageEmbeds(messageAsEmbed("No Video or Song found.")).queue();
     }
 
     @Override
     public void loadFailed(FriendlyException exception) {
-        // send embed with slightly red color
-        controller.getQueue().getCmdChannel().sendMessage(
-                "Loading has failed." +
-                        "\nSeverity: `" + exception.severity + "`.").queue();
+        controller.getQueue().getCmdChannel().sendMessageEmbeds(
+                CantinaBand.messageAsEmbed("Loading has failed.\nSeverity: `" + exception.severity + "`.", Color.decode("#d44646"))).queue();
     }
 }

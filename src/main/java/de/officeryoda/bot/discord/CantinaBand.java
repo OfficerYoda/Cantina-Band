@@ -6,9 +6,11 @@ import de.officeryoda.bot.discord.Listener.CommandListener;
 import de.officeryoda.bot.discord.Listener.ReadyListener;
 import de.officeryoda.bot.discord.Music.MusicMaster;
 import lombok.Getter;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.awt.*;
@@ -58,6 +60,17 @@ public class CantinaBand {
     public static void main(String[] args) {
         startTime = System.currentTimeMillis();
         new CantinaBand();
+    }
+
+    public static MessageEmbed messageAsEmbed(String message, Color color) {
+        return new EmbedBuilder()
+                .setColor(color)
+                .setTitle(message)
+                .build();
+    }
+
+    public static MessageEmbed messageAsEmbed(String message) {
+        return messageAsEmbed(message, EMBED_COLOR);
     }
 
     private void shutdown() {
