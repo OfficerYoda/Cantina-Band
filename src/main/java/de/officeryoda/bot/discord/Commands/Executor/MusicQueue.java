@@ -147,7 +147,7 @@ public class MusicQueue {
 
             if (controller.getQueue().getQueueLength() > 0) {
                 event.reply("Skipping the current song.").queue(msg -> {
-                    controller.getQueue().next();
+                    controller.getQueue().next(true);
                     msg.editOriginal("Skipped the current song.").queue();
                 });
             } else {

@@ -40,11 +40,11 @@ public class Queue {
         this.trackList = new ArrayList<>();
     }
 
-    public boolean next() {
+    public boolean next(boolean forceSkip) {
         if(hasNext()) return false;
 
         AudioTrack track;
-        if(controller.isLooping()) {
+        if(controller.isLooping() && !forceSkip) {
             track = trackList.get(Math.max(queuePosition - 1, 0));
             lastLoopingTrack = track;
         } else {
@@ -56,12 +56,17 @@ public class Queue {
 
         if(track == null) return false;
 
-        sendPlayEmbed(track);
+        if(!controller.isLooping() || forceSkip)
+            sendPlayEmbed(track);
 
         // Can't play the same instance of a track twice: .clone to get multiple instances during queue navigation
         player.playTrack(track.makeClone());
 
         return true;
+    }
+
+    public boolean next() {
+        return next(false);
     }
 
     public void previous() {

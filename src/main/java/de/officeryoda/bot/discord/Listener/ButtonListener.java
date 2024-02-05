@@ -86,7 +86,7 @@ public class ButtonListener extends ListenerAdapter {
         switch(event.getComponentId()) {
             case "playerPreviousTrack" -> queue.previous();
             case "playerTogglePlay" -> queue.setPlaying(!queue.isPlaying());
-            case "playerNextTrack" -> queue.next();
+            case "playerNextTrack" -> queue.next(true);
         }
 
         AudioTrack track = queue.getCurrentTrack();
