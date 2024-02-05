@@ -45,10 +45,10 @@ public class ButtonListener extends ListenerAdapter {
 
         int crntPage = 1;
 
-        if (footer.getIconUrl() == null) {
+        if(footer.getIconUrl() == null) {
             // When a queue exists, the footer doesn't contain a profile picture
             crntPage = Character.getNumericValue(footer.getText().charAt(5)); // Extract page number ('2') from ("page 2/3")
-        } else if (controller.getQueue().getQueueLength() == 0) {
+        } else if(controller.getQueue().getQueueLength() == 0) {
             event.reply("This button won't do anything, so don't embarrass yourself and stop trying.")
                     .setEphemeral(true)
                     .queue();
@@ -92,15 +92,15 @@ public class ButtonListener extends ListenerAdapter {
         AudioTrack track = queue.getCurrentTrack();
         EmbedBuilder embed = queue.getPlayEmbed(track);
 
-        if(track.getInfo().uri.startsWith("https://www.youtube.com/watch?v=")) {
+        if(track.getInfo().uri.matches("https://(www\\.)?youtube\\.com/watch\\?v=.+")) {
             InputStream file = queue.getThumbnail(track);
             if(file != null) {
                 embed.setImage("attachment://thumbnail.png");
-                event.replyFiles(FileUpload.fromData(file, "thumbnail.png")).setEmbeds(embed.build()).addActionRow(ActionRows.playerRow(queue.isPlaying()));
+                event.editMessageAttachments(FileUpload.fromData(file, "thumbnail.png")).setEmbeds(embed.build()).queue();
             }
+        } else {
+            event.editMessageEmbeds(embed.build()).setActionRow(ActionRows.playerRow(queue.isPlaying())).queue();
         }
-
-        event.editMessageEmbeds(embed.build()).setActionRow(ActionRows.playerRow(queue.isPlaying())).queue();
     }
 
     private int clamp(int value, int min, int max) {

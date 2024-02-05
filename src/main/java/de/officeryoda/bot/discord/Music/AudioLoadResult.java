@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.officeryoda.bot.discord.CantinaBand;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 public class AudioLoadResult implements AudioLoadResultHandler {
@@ -36,7 +37,8 @@ public class AudioLoadResult implements AudioLoadResultHandler {
 
         playlist.getTracks().forEach(track -> queue.addTrackToQueue(track, true));
 
-        EmbedBuilder embed = new EmbedBuilder().setColor(CantinaBand.EMBED_COLOR)
+        EmbedBuilder embed = new EmbedBuilder()
+                .setColor(CantinaBand.EMBED_COLOR)
                 .setTitle("Playlist `" + playlist.getName() + "` added to queue")
                 .setDescription("Added ``" + playlist.getTracks().size() + "`` tracks to queue; now ``" + queue.getQueueLength() + "``.")
                 .setFooter(cantinaBand.getEmbedFooterTime(), cantinaBand.getProfilePictureUrl());
@@ -52,6 +54,7 @@ public class AudioLoadResult implements AudioLoadResultHandler {
 
     @Override
     public void loadFailed(FriendlyException exception) {
+        // send embed with slightly red color
         controller.getQueue().getCmdChannel().sendMessage(
                 "Loading has failed." +
                         "\nSeverity: `" + exception.severity + "`.").queue();

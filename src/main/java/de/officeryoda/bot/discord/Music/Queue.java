@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.io.IOException;
@@ -29,8 +30,8 @@ public class Queue {
      */
     private int queuePosition;
     private AudioTrack lastLoopingTrack;
-    @Setter
     @Getter
+    @Setter
     private MessageChannelUnion cmdChannel;
 
     public Queue(MusicController controller) {
@@ -85,10 +86,15 @@ public class Queue {
     public void addTrackToQueue(AudioTrack track, boolean isPlaylist) {
         this.trackList.add(track);
 
-        if(player.getPlayingTrack() == null)
+        if(player.getPlayingTrack() == null) {
             next();
-        else if(!isPlaylist)
-            cmdChannel.sendMessage(":notes: Added **" + track.getInfo().title + "** to queue.").queue();
+        } else if(!isPlaylist) {
+            EmbedBuilder embed = new EmbedBuilder()
+                    .setColor(CantinaBand.EMBED_COLOR)
+                    .setTitle(":notes: Added **" + track.getInfo().title + "** to queue.");
+
+            cmdChannel.sendMessageEmbeds(embed.build()).queue();
+        }
     }
 
     public void shuffle() {
@@ -100,7 +106,7 @@ public class Queue {
         queuePosition = 0;
     }
 
-    private String songLengthToTime(long length) {
+    private String songLengthToTimeString(long length) {
         String time = "";
 
         long seconds = length / 1000;
@@ -138,11 +144,9 @@ public class Queue {
 
     private void sendPlayEmbed(AudioTrack track) {
         if(player.getPlayingTrack() == null) {
-            AudioTrackInfo info = track.getInfo();
-            String url = info.uri;
             EmbedBuilder embed = getPlayEmbed(track);
 
-            if(url.startsWith("https://www.youtube.com/watch?v=")) {
+            if(track.getInfo().uri.matches("https://(www\\.)?youtube\\.com/watch\\?v=.+")) {
                 InputStream file = getThumbnail(track);
                 if(file != null) {
                     embed.setImage("attachment://thumbnail.png");
@@ -156,7 +160,7 @@ public class Queue {
 
     public EmbedBuilder getPlayEmbed(AudioTrack track) {
         AudioTrackInfo info = track.getInfo();
-        String time = songLengthToTime(info.length);
+        String time = songLengthToTimeString(info.length);
         String url = info.uri;
 
         return new EmbedBuilder()
@@ -168,7 +172,7 @@ public class Queue {
     }
 
     public InputStream getThumbnail(AudioTrack track) {
-        String videoID = track.getInfo().uri.replace("https://www.youtube.com/watch?v=", "");
+        String videoID = track.getInfo().uri.replaceFirst("https://(www\\.)?youtube\\.com/watch\\?v=", "");
 
         InputStream file;
         try {
