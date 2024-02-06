@@ -1,6 +1,5 @@
 package de.officeryoda.bot.discord.Listener;
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import de.officeryoda.bot.discord.CantinaBand;
 import de.officeryoda.bot.discord.Commands.Executor.MusicQueue;
 import de.officeryoda.bot.discord.Miscellaneous.ActionRows;
@@ -8,20 +7,15 @@ import de.officeryoda.bot.discord.Music.MusicController;
 import de.officeryoda.bot.discord.Music.MusicMaster;
 import de.officeryoda.bot.discord.Music.Queue;
 import de.officeryoda.bot.discord.exceptions.ShouldNotGetHereException;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.utils.FileUpload;
-
-import java.io.InputStream;
 
 public class ButtonListener extends ListenerAdapter {
 
     private final static int QUEUE_FAR_JUMP_AMOUNT = 10;
-
     private final MusicMaster master;
     private final MusicQueue.CmdQueue cmdQueue;
 
@@ -85,22 +79,15 @@ public class ButtonListener extends ListenerAdapter {
 
         switch(event.getComponentId()) {
             case "playerPreviousTrack" -> queue.previous();
-            case "playerTogglePlay" -> queue.setPlaying(!queue.isPlaying());
+            case "playerTogglePlay" -> {
+                queue.setPlaying(!queue.isPlaying());
+                controller.sendOrUpdatePlayEmbed();
+            }
             case "playerNextTrack" -> queue.next(true);
         }
 
-        AudioTrack track = queue.getCurrentTrack();
-        EmbedBuilder embed = controller.getPlayEmbed(track);
-
-        if(track.getInfo().uri.matches("https://(www\\.)?youtube\\.com/watch\\?v=.+")) {
-            InputStream file = controller.getThumbnail(track);
-            if(file != null) {
-                embed.setImage("attachment://thumbnail.png");
-                event.editMessageAttachments(FileUpload.fromData(file, "thumbnail.png")).setEmbeds(embed.build()).queue();
-            }
-        } else {
-            event.editMessageEmbeds(embed.build()).setActionRow(ActionRows.playerRow(queue.isPlaying())).queue();
-        }
+        // sending or editing a message will be handled in 'sendOrUpdatePlayEmbed()'
+        event.deferEdit().queue();
     }
 
     private int clamp(int value, int min, int max) {

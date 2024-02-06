@@ -17,7 +17,6 @@ public class Queue {
      * Represents the position of the next track in the queue to be played after the current track is finished.
      */
     private int queuePosition;
-    private AudioTrack lastLoopingTrack;
 
     public Queue(MusicController controller) {
         this.controller = controller;
@@ -31,18 +30,15 @@ public class Queue {
         AudioTrack track;
         if(controller.isLooping() && !forceSkip) {
             track = trackList.get(Math.max(queuePosition - 1, 0));
-            lastLoopingTrack = track;
         } else {
             track = trackList.get(queuePosition);
             queuePosition++;
-            if(track == lastLoopingTrack)
-                return next();
         }
 
         if(track == null) return false;
 
         if(!controller.isLooping() || forceSkip)
-            controller.sendPlayEmbed(track);
+            controller.sendOrUpdatePlayEmbed();
 
         // Can't play the same instance of a track twice: .clone to get multiple instances during queue navigation
         player.playTrack(track.makeClone());
@@ -58,11 +54,11 @@ public class Queue {
         if(!hasPrevious()) return;
 
         queuePosition--;
-        AudioTrack track = trackList.get(queuePosition - 1); // queue position is where the index of the next song
+        AudioTrack track = getCurrentTrack();
 
         if(track == null) return;
 
-        controller.sendPlayEmbed(track);
+        controller.sendOrUpdatePlayEmbed();
 
         player.playTrack(track.makeClone());
     }
@@ -112,6 +108,7 @@ public class Queue {
     }
 
     public AudioTrack getCurrentTrack() {
+        if(queuePosition <= 0) return null;
         return trackList.get(queuePosition - 1);
     }
 }

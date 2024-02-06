@@ -38,7 +38,6 @@ public class ActionRows {
         Button b1 = Button.primary("playerPreviousTrack", Emoji.fromUnicode("⏮"));
         Button b2 = Button.primary("playerTogglePlay", Emoji.fromUnicode(isPlaying ? "⏸" : "▶"));
         Button b3 = Button.primary("playerNextTrack", Emoji.fromUnicode("⏭"));
-//        Button b4 = Button.primary("playerToggleLoop", Emoji.fromUnicode("\uD83D\uDD01"));
 
         List<Button> buttons = new ArrayList<>();
         buttons.add(b1);

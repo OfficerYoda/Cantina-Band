@@ -9,12 +9,15 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Getter
 public class MusicController {
@@ -24,11 +27,17 @@ public class MusicController {
     private final Guild guild;
     private final AudioPlayer player;
     private final Queue queue;
+    /**
+     * Number of recent messages to consider when checking for the presence of the interacted message.
+     * If not found within the last 'recentMessageThreshold', a new message is sent.
+     */
+    private final int recentMessageThreshold = 5;
     @Setter
     private boolean looping;
     @Getter
     @Setter
     private MessageChannelUnion cmdChannel;
+    private Message playEmbedMsg;
 
     public MusicController(MusicMaster master, Guild guild) {
         this.cantinaBand = CantinaBand.INSTANCE;
@@ -42,31 +51,47 @@ public class MusicController {
         this.player.addListener(new TrackScheduler(this.master));
     }
 
-    public int getVolume() {
-        return this.player.getVolume();
-    }
+    public void sendOrUpdatePlayEmbed() {
+        AudioTrack track = queue.getCurrentTrack();
+        EmbedBuilder embed = getPlayEmbed(track);
 
-    public void setVolume(int volume) {
-        this.player.setVolume(volume);
-    }
-
-    public void sendPlayEmbed(AudioTrack track) {
-        if(player.getPlayingTrack() == null) {
-            EmbedBuilder embed = getPlayEmbed(track);
-
-            if(track.getInfo().uri.matches("https://(www\\.)?youtube\\.com/watch\\?v=.+")) {
-                InputStream file = getThumbnail(track);
-                if(file != null) {
-                    embed.setImage("attachment://thumbnail.png");
-                    cmdChannel.sendFiles(FileUpload.fromData(file, "thumbnail.png")).setEmbeds(embed.build()).addActionRow(ActionRows.playerRow(true)).queue(); // not playing yet but as soon as it joins
-                }
+        if(playEmbedMsg != null && !newPlayEmbedNeeded()) {
+            // edit existing message
+            InputStream file = getThumbnail(track);
+            if(file != null) {
+                // with thumbnail
+                embed.setImage("attachment://thumbnail.png");
+                playEmbedMsg.editMessageAttachments(FileUpload.fromData(file, "thumbnail.png")).queue();
             } else {
-                cmdChannel.sendMessageEmbeds(embed.build()).addActionRow(ActionRows.playerRow(true)).queue(); // not playing yet but as soon as it joins
+                // without thumbnail
+                playEmbedMsg.editMessageEmbeds(embed.build()).setActionRow(ActionRows.playerRow(queue.isPlaying())).queue();
             }
+        } else {
+            // send new play embed
+            sendNewPlayEmbed(track);
         }
     }
 
-    public EmbedBuilder getPlayEmbed(AudioTrack track) {
+    private void sendNewPlayEmbed(AudioTrack track) {
+        EmbedBuilder embed = getPlayEmbed(track);
+
+        InputStream file = getThumbnail(track);
+        if(file != null) {
+            // with thumbnail
+            embed.setImage("attachment://thumbnail.png");
+            cmdChannel.sendFiles(FileUpload.fromData(file, "thumbnail.png"))
+                    .setEmbeds(embed.build())
+                    .addActionRow(ActionRows.playerRow(true))
+                    .queue(msg -> playEmbedMsg = msg);
+        } else {
+            // without thumbnail
+            cmdChannel.sendMessageEmbeds(embed.build())
+                    .addActionRow(ActionRows.playerRow(true))
+                    .queue(msg -> playEmbedMsg = msg);
+        }
+    }
+
+    private EmbedBuilder getPlayEmbed(AudioTrack track) {
         AudioTrackInfo info = track.getInfo();
         String time = songLengthToTimeString(info.length);
         String url = info.uri;
@@ -79,16 +104,30 @@ public class MusicController {
                 .setFooter(cantinaBand.getEmbedFooterTime(), cantinaBand.getProfilePictureUrl());
     }
 
-    public InputStream getThumbnail(AudioTrack track) {
+    private InputStream getThumbnail(AudioTrack track) {
         String videoID = track.getInfo().uri.replaceFirst("https://(www\\.)?youtube\\.com/watch\\?v=", "");
 
         InputStream file;
         try {
             file = new URL("https://img.youtube.com/vi/" + videoID + "/hqdefault.jpg").openStream();
         } catch(IOException e) {
-            throw new RuntimeException(e);
+            return null;
         }
         return file;
+    }
+
+    private boolean newPlayEmbedNeeded() {
+        long interactedId = playEmbedMsg.getIdLong();
+        CompletableFuture<Boolean> futureResult = new CompletableFuture<>();
+
+        cmdChannel.getHistory().retrievePast(recentMessageThreshold)
+                .map(messages -> messages.stream()
+                        .map(Message::getIdLong)
+                        .collect(Collectors.toSet()))
+                .queue(ids -> futureResult.complete(ids.contains(interactedId)));
+
+        // wait for async call to complete
+        return !futureResult.join();
     }
 
     private String songLengthToTimeString(long length) {
@@ -116,5 +155,13 @@ public class MusicController {
             time += seconds + "";
 
         return time;
+    }
+
+    public int getVolume() {
+        return this.player.getVolume();
+    }
+
+    public void setVolume(int volume) {
+        this.player.setVolume(volume);
     }
 }
