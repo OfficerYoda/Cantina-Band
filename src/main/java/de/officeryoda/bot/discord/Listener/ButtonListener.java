@@ -90,10 +90,10 @@ public class ButtonListener extends ListenerAdapter {
         }
 
         AudioTrack track = queue.getCurrentTrack();
-        EmbedBuilder embed = queue.getPlayEmbed(track);
+        EmbedBuilder embed = controller.getPlayEmbed(track);
 
         if(track.getInfo().uri.matches("https://(www\\.)?youtube\\.com/watch\\?v=.+")) {
-            InputStream file = queue.getThumbnail(track);
+            InputStream file = controller.getThumbnail(track);
             if(file != null) {
                 embed.setImage("attachment://thumbnail.png");
                 event.editMessageAttachments(FileUpload.fromData(file, "thumbnail.png")).setEmbeds(embed.build()).queue();

@@ -46,18 +46,18 @@ public class AudioLoadResult implements AudioLoadResultHandler {
                 .setDescription("Added ``" + playlist.getTracks().size() + "`` tracks to queue; now ``" + queue.getQueueLength() + "``.")
                 .setFooter(cantinaBand.getEmbedFooterTime(), cantinaBand.getProfilePictureUrl());
 
-        MessageChannelUnion channel = controller.getQueue().getCmdChannel();
+        MessageChannelUnion channel = controller.getCmdChannel();
         channel.sendMessageEmbeds(embed.build()).queue();
     }
 
     @Override
     public void noMatches() {
-        controller.getQueue().getCmdChannel().sendMessageEmbeds(messageAsEmbed("No Video or Song found.")).queue();
+        controller.getCmdChannel().sendMessageEmbeds(messageAsEmbed("No Video or Song found.")).queue();
     }
 
     @Override
     public void loadFailed(FriendlyException exception) {
-        controller.getQueue().getCmdChannel().sendMessageEmbeds(
+        controller.getCmdChannel().sendMessageEmbeds(
                 CantinaBand.messageAsEmbed("Loading has failed.\nSeverity: `" + exception.severity + "`.", Color.decode("#d44646"))).queue();
     }
 }

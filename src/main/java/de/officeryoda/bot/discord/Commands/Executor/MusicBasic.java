@@ -48,7 +48,7 @@ public class MusicBasic {
                     (result) -> result.deleteOriginal().queue(),
                     (failure) -> failure.printStackTrace());
 
-            queue.setCmdChannel(event.getChannel());
+            controller.setCmdChannel(event.getChannel());
             manager.openAudioConnection(vc);
 
             // get url arg
