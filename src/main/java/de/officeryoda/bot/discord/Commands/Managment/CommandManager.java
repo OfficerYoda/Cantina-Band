@@ -42,7 +42,7 @@ public class CommandManager {
 
         List<Command> commands = new ArrayList<>();
         commands.add(new Command(Commands.slash("ping", "Pings the Bot"), new CmdPing()));
-        commands.add(new Command(Commands.slash("play", "Plays a song from Youtube/SoundCloud(Coming soon)").addOptions(urlArg), new MusicBasic.CmdPlay()));
+        commands.add(new Command(Commands.slash("play", "Plays a song from Youtube").addOptions(urlArg), new MusicBasic.CmdPlay()));
         commands.add(new Command(Commands.slash("stop", "Stops the bot and clears the queue"), new MusicBasic.CmdStop()));
         commands.add(new Command(Commands.slash("volume", "Sets the Volume of the bot").addOptions(volumeArg), new MusicMisc.CmdVolume()));
         commands.add(new Command(Commands.slash("pause", "Pauses the bot"), new MusicMisc.CmdPause()));

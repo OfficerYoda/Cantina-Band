@@ -34,6 +34,9 @@ public class MusicMisc {
 
             MusicController controller = master.getController(event.getGuild().getIdLong());
             OptionMapping messageOption = event.getOption("volume");
+
+            controller.setCmdChannel(event.getChannel());
+
             if(messageOption == null) {
                 event.reply("The volume is `" + controller.getVolume() + "`.").queue();
             } else {
@@ -59,6 +62,8 @@ public class MusicMisc {
             MusicController controller = master.getController(event.getGuild().getIdLong());
             AudioPlayer player = controller.getPlayer();
 
+            controller.setCmdChannel(event.getChannel());
+
             if(player.isPaused()) {
                 event.reply("The band is already taking a rest.").queue();
             } else {
@@ -82,6 +87,8 @@ public class MusicMisc {
 
             MusicController controller = master.getController(event.getGuild().getIdLong());
             AudioPlayer player = controller.getPlayer();
+
+            controller.setCmdChannel(event.getChannel());
 
             if(player.isPaused()) {
                 player.setPaused(false);
@@ -107,13 +114,15 @@ public class MusicMisc {
             MusicController controller = master.getController(event.getGuild().getIdLong());
             OptionMapping messageOption = event.getOption("looping");
 
+            controller.setCmdChannel(event.getChannel());
+
             if(messageOption != null) {
                 controller.setLooping(messageOption.getAsBoolean());
             }
 
-            event.reply("The band is currently "
-                    + (controller.isLooping() ? "" : "not ") +
-                    "playing den selben Song nochmal.").queue();
+            String status = controller.isLooping() ? "✅" : "❌";
+            String message = status + " The band is " + (controller.isLooping() ? "" : "not") + " playing den selben Song nochmal.";
+            event.reply(message).queue();
         }
     }
 
@@ -132,10 +141,11 @@ public class MusicMisc {
             MusicController controller = master.getController(event.getGuild().getIdLong());
             controller.setLooping(!controller.isLooping());
 
-            // use: ❌ ✅
-            event.reply("The band is "
-                    + (controller.isLooping() ? "" : "not") +
-                    " playing den selben Song nochmal.").queue();
+            controller.setCmdChannel(event.getChannel());
+
+            String status = controller.isLooping() ? "✅" : "❌";
+            String message = status + " The band is " + (controller.isLooping() ? "" : "not") + " playing den selben Song nochmal.";
+            event.reply(message).queue();
         }
     }
 }

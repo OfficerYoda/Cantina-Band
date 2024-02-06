@@ -39,6 +39,8 @@ public class MusicQueue {
             MusicController controller = master.getController(guild.getIdLong());
             Queue queue = controller.getQueue();
 
+            controller.setCmdChannel(event.getChannel());
+
             OptionMapping arg1 = event.getOption("operation");
             if(arg1 != null) {
                 switch(arg1.getAsString()) {
@@ -126,6 +128,7 @@ public class MusicQueue {
 
             MusicController controller = master.getController(event.getGuild().getIdLong());
             controller.getQueue().shuffle();
+            controller.setCmdChannel(event.getChannel());
 
             event.reply("Shuffled the queue.").queue();
         }
@@ -144,6 +147,7 @@ public class MusicQueue {
             if(MusicMisc.differentVoiceChannel(event)) return;
 
             MusicController controller = master.getController(event.getGuild().getIdLong());
+            controller.setCmdChannel(event.getChannel());
 
             if (controller.getQueue().getQueueLength() > 0) {
                 event.reply("Skipping the current song.").queue(msg -> {

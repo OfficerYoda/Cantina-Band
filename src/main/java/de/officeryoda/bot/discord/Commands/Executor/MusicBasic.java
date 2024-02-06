@@ -79,6 +79,8 @@ public class MusicBasic {
             MusicController controller = master.getController(guild.getIdLong());
             AudioPlayer player = controller.getPlayer();
 
+            controller.setCmdChannel(event.getChannel());
+
             event.reply("Trying to stop playing.").queue(msg -> {
                 if(player.getPlayingTrack() == null) {
                     msg.editOriginal("Nothing is playing.").queue();
