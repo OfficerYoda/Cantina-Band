@@ -1,1 +1,1 @@
-A Discord Music Bot with visual interface inside.
+A Discord Music Bot with visual interface.
