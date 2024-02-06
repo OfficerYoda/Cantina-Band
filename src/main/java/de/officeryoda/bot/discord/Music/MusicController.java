@@ -61,10 +61,15 @@ public class MusicController {
             if(file != null) {
                 // with thumbnail
                 embed.setImage("attachment://thumbnail.png");
-                playEmbedMsg.editMessageAttachments(FileUpload.fromData(file, "thumbnail.png")).queue();
+                playEmbedMsg.editMessageAttachments(FileUpload.fromData(file, "thumbnail.png"))
+                        .setEmbeds(embed.build())
+                        .setActionRow(ActionRows.playerRow(queue.isPlaying()))
+                        .queue();
             } else {
                 // without thumbnail
-                playEmbedMsg.editMessageEmbeds(embed.build()).setActionRow(ActionRows.playerRow(queue.isPlaying())).queue();
+                playEmbedMsg.editMessageEmbeds(embed.build())
+                        .setActionRow(ActionRows.playerRow(queue.isPlaying()))
+                        .queue();
             }
         } else {
             // send new play embed
@@ -81,12 +86,12 @@ public class MusicController {
             embed.setImage("attachment://thumbnail.png");
             cmdChannel.sendFiles(FileUpload.fromData(file, "thumbnail.png"))
                     .setEmbeds(embed.build())
-                    .addActionRow(ActionRows.playerRow(true))
+                    .addActionRow(ActionRows.playerRow(queue.isPlaying()))
                     .queue(msg -> playEmbedMsg = msg);
         } else {
             // without thumbnail
             cmdChannel.sendMessageEmbeds(embed.build())
-                    .addActionRow(ActionRows.playerRow(true))
+                    .addActionRow(ActionRows.playerRow(queue.isPlaying()))
                     .queue(msg -> playEmbedMsg = msg);
         }
     }

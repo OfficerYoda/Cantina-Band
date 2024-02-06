@@ -14,26 +14,25 @@ public class Queue {
     private final AudioPlayer player;
     private List<AudioTrack> trackList;
     /**
-     * Represents the position of the next track in the queue to be played after the current track is finished.
+     * Represents the index of the currently playing track in the queue.
      */
-    private int queuePosition;
+    private int playPosition;
 
     public Queue(MusicController controller) {
         this.controller = controller;
         this.player = controller.getPlayer();
         this.trackList = new ArrayList<>();
+        this.playPosition = -1;
     }
 
     public boolean next(boolean forceSkip) {
-        if(hasNext()) return false;
+        if(!hasNext()) return false;
 
         AudioTrack track;
-        if(controller.isLooping() && !forceSkip) {
-            track = trackList.get(Math.max(queuePosition - 1, 0));
-        } else {
-            track = trackList.get(queuePosition);
-            queuePosition++;
+        if(!(controller.isLooping() && !forceSkip)) {
+            playPosition++;
         }
+        track = trackList.get(playPosition);
 
         if(track == null) return false;
 
@@ -53,7 +52,7 @@ public class Queue {
     public void previous() {
         if(!hasPrevious()) return;
 
-        queuePosition--;
+        playPosition--;
         AudioTrack track = getCurrentTrack();
 
         if(track == null) return;
@@ -79,7 +78,7 @@ public class Queue {
 
     public void clear() {
         trackList = new ArrayList<>();
-        queuePosition = 0;
+        playPosition = -1;
     }
 
     public boolean isPlaying() {
@@ -91,24 +90,23 @@ public class Queue {
     }
 
     public int getQueueLength() {
-        return trackList.size() - queuePosition;
+        return trackList.size() - (playPosition + 1);
     }
 
     public List<AudioTrack> getQueueList() {
         if(getQueueLength() == 0) return new ArrayList<>();
-        return trackList.subList(queuePosition, trackList.size() - 1);
+        return trackList.subList(playPosition + 1, trackList.size() - 1);
     }
 
     public boolean hasNext() {
-        return getQueueLength() == 0;
+        return getQueueLength() != 0;
     }
 
     public boolean hasPrevious() {
-        return queuePosition > 1;
+        return playPosition > 0;
     }
 
     public AudioTrack getCurrentTrack() {
-        if(queuePosition <= 0) return null;
-        return trackList.get(queuePosition - 1);
+        return trackList.get(playPosition);
     }
 }
