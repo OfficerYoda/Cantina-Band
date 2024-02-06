@@ -5,7 +5,6 @@ import de.officeryoda.bot.discord.CantinaBand;
 import de.officeryoda.bot.discord.Commands.Managment.CommandExecutor;
 import de.officeryoda.bot.discord.Music.MusicController;
 import de.officeryoda.bot.discord.Music.MusicMaster;
-import de.officeryoda.bot.discord.exceptions.ShouldNotGetHereException;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;

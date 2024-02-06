@@ -78,12 +78,18 @@ public class ButtonListener extends ListenerAdapter {
         Queue queue = controller.getQueue();
 
         switch(event.getComponentId()) {
-            case "playerPreviousTrack" -> queue.previous();
+            case "playerPreviousTrack" -> {
+                queue.setPlaying(false);
+                queue.previous();
+            }
             case "playerTogglePlay" -> {
                 queue.setPlaying(!queue.isPlaying());
                 controller.sendOrUpdatePlayEmbed();
             }
-            case "playerNextTrack" -> queue.next(true);
+            case "playerNextTrack" -> {
+                queue.setPlaying(false);
+                queue.next(true);
+            }
         }
 
         // sending or editing a message will be handled in 'sendOrUpdatePlayEmbed()'

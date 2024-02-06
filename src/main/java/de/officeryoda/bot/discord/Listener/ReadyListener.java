@@ -3,8 +3,10 @@ package de.officeryoda.bot.discord.Listener;
 import de.officeryoda.bot.discord.CantinaBand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.time.LocalDateTime;
@@ -36,5 +38,11 @@ public class ReadyListener extends ListenerAdapter {
             cantinaBand.addGuild(guild);
         }
         System.out.println("Cantina Band is ready to play.");
+    }
+
+    @Override
+    public void onGuildJoin(@NotNull GuildJoinEvent event) {
+        super.onGuildJoin(event);
+        CantinaBand.INSTANCE.addGuild(event.getGuild());
     }
 }

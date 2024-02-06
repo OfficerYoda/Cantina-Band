@@ -38,7 +38,7 @@ public class CantinaBand {
 
         // Build bot
         JDABuilder builder = JDABuilder.createDefault(TOKEN.TOKEN);
-        builder.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_VOICE_STATES);
+        builder.enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_VOICE_STATES);
         jda = builder.build();
 
         // music
